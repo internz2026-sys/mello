@@ -159,6 +159,11 @@ These were flagged in `audits/voice-audit.md` but consciously deferred:
 - **S5-6** static, non-bypassable alpha disclaimer gate (not therapy / not a crisis service; static copy, not model-generated, separate from the firebreak screen).
 - Specs only; §7 of the spec gives the safe-now build order. Nothing 4D-gated is unlocked.
 
+### S5-3. Alpha compose / Docker (spec locked; build gated)
+- **Spec:** `docs/step5-3-deploy-compose-spec.md`. Decisions locked: **9a** Claude CLI in-image, auth via runtime-injected Claude Code OAuth token (no API key/interactive/baked cred); **Supabase four-roles**, no Postgres container (VPS = api+qdrant).
+- **Pre-build blocker [verify]:** confirm the exact Claude Code OAuth-token env var / setup command for the *installed* `claude` CLI version before the Dockerfile references it. Do not assume the name. 9b (mounted host cred dir) is the fallback if unavailable.
+- Build items (gated on the verify above): **S5-3a** multi-stage api image (Node+Python+`retriever/`+CLI; `RETRIEVER_ENTRYPOINT` absolute, fixes AD-3) · **S5-3b** `docker-compose.alpha.yml` (api+qdrant, internal qdrant, no restart-mask of the S5-1 guard) · **S5-3c** `.dockerignore` (no `.env`/secrets/`.git` in build context) · **S5-3d** `scripts/deploy-smoke.sh` (S5-2 against `ALPHA_BASE_URL`, non-zero = failed deploy) · **S5-3e** operator runbook. Specs only; implementation is the next explicit task.
+
 ## Convention to maintain
 
 When closing a follow-up here, **link the commit/PR that closed it** as a one-line note under the item, and move the item to a `## Closed` section at the bottom of the file. Do not delete; the trail matters.
