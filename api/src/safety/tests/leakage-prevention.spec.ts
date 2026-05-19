@@ -233,13 +233,28 @@ describe('4B.7 — B. Static import guard (architectural, not aspirational)', ()
     'venv',
   ]);
 
-  /** Allowed to name quarantine BY DESIGN: the safety domain owns it, and
-   *  the schema dir is the shared crisis-contract home (types only, no raw
-   *  text, no DB credential). Everything else is forbidden. */
+  /** Allowed to name quarantine BY DESIGN. Three narrow, deliberate
+   *  exemptions (same posture as the composition-root wiring exemption
+   *  below — conscious + documented, never a blanket loosening):
+   *   1. the safety domain itself owns the crisis tokens;
+   *   2. the schema dir is the shared crisis-contract home (types only,
+   *      no raw text, no DB credential);
+   *   3. the S5-1 credential-isolation guard (and its spec) — these
+   *      DEFEND the boundary: they reference the quarantine credential
+   *      ENV-VAR NAME to *enforce* four-way isolation at boot. They
+   *      import no safety module, hold no crisis row, and are not a data
+   *      path to a quarantined entry. Naming the var to protect it is
+   *      the opposite of leaking it.
+   *  The planted-probe positive control still plants into a memory-engine
+   *  dir, so this exemption cannot make the guard pass vacuously.
+   *  Everything else is forbidden. */
   function isExempt(file: string): boolean {
     const p = file.split(path.sep).join('/');
     return (
-      p.includes('/api/src/safety/') || p.includes('/api/src/schemas/')
+      p.includes('/api/src/safety/') ||
+      p.includes('/api/src/schemas/') ||
+      p.endsWith('/api/src/common/credential-isolation.ts') ||
+      p.endsWith('/api/src/common/credential-isolation.spec.ts')
     );
   }
 

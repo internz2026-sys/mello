@@ -2,8 +2,13 @@ import 'reflect-metadata';
 import { NestFactory } from '@nestjs/core';
 import { Logger, ValidationPipe } from '@nestjs/common';
 import { AppModule } from './app.module';
+import { assertDistinctSafetyCredentials } from './common/credential-isolation';
 
 async function bootstrap(): Promise<void> {
+  // S5-1 / AD-1: refuse to boot unless the four DB credentials are
+  // isolated. Runs BEFORE any pool is constructed. Never prints a value.
+  assertDistinctSafetyCredentials();
+
   const app = await NestFactory.create(AppModule, {
     logger: ['error', 'warn', 'log'],
   });
