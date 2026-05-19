@@ -1,0 +1,5 @@
+python-dotenv>=1.0.0
+
+# Note: all Claude calls are routed through the Claude Code CLI (`claude -p`),
+# not the Anthropic SDK. The `anthropic` package is intentionally not a dependency.
+# Requires the `claude` binary on PATH (verify with `claude --version`).

@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(bash --version)",
+      "Bash(python \"c:/Users/Admin/Documents/mello/.claude/hooks/session-start.py\")",
+      "Bash(where claude *)",
+      "Bash(claude --version)",
+      "Bash(python -c ' *)",
+      "Bash(npm install *)",
+      "Bash(npx tsc *)",
+      "Bash(echo \"tsc exit: $?\")",
+      "Bash(python -c \"import ast; ast.parse\\(open\\(r'c:/Users/Admin/Documents/mello/distiller/distiller.py', encoding='utf-8'\\).read\\(\\)\\); print\\('distiller.py parse OK'\\)\")",
+      "Bash(python distiller.py --in fixtures/sample_entries.json --out output/memories.json)",
+      "Bash(python -c \"import ast; ast.parse\\(open\\(r'c:/Users/Admin/Documents/mello/distiller/distiller.py', encoding='utf-8'\\).read\\(\\)\\); print\\('parse OK'\\)\")",
+      "Bash(curl -s http://localhost:6333/healthz)",
+      "Bash(curl -s http://localhost:6333/collections)",
+      "Bash(python -c 'import ast; ast.parse\\(open\\('\\\\''__TRACKED_VAR__'\\\\'',encoding='\\\\''utf-8'\\\\''\\).read\\(\\)\\); print\\('\\\\''__TRACKED_VAR__ OK'\\\\''\\)')",
+      "Bash(python seeder.py --in step3_seed.json --user_id test_user --recreate)",
+      "Bash(python -c \"import voyageai; print\\('voyageai', voyageai.__version__ if hasattr\\(voyageai,'__version__'\\) else 'ok'\\)\")",
+      "Bash(python retriever.py --user_id test_user --query \"I'm afraid of disappointing my dad\" --format pretty)",
+      "Bash(python retriever.py --user_id test_user --query \"afraid of letting my father down again\" --format pretty)",
+      "Bash(python retriever.py --user_id test_user --query \"afraid of letting my father down again\" --include-sealed --format pretty)",
+      "Bash(python retriever.py --user_id test_user --query \"I handled that conversation with my dad differently this time\" --format pretty)",
+      "Bash(python -c \"import ast; ast.parse\\(open\\('retriever.py',encoding='utf-8'\\).read\\(\\)\\); print\\('retriever.py parse OK'\\)\")",
+      "Bash(python retriever.py --user_id test_user --query \"work was fine today, nothing much happened\" --format pretty)",
+      "Bash(echo \"\\(exit $?\\)\")",
+      "Bash(python retriever.py --user_id test_user --query \"I had a good morning today\" --format pretty)",
+      "Bash(npx jest *)",
+      "Bash(RUN_LIVE_CLASSIFIER=1 npx jest crisis-corpus --silent)",
+      "Bash(sed -n '14,40p' backend/migrations/0010_safety_events.sql)",
+      "Bash(sed -n '30,55p' backend/migrations/0012_safety_quarantine.sql)",
+      "Bash(grep -oE \"[A-Z_]{3,}\")"
+    ]
+  }
+}

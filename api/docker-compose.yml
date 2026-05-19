@@ -1,0 +1,48 @@
+version: "3.9"
+
+# mellō — local dev stack
+# api    : NestJS backend (this folder)
+# qdrant : self-hosted vector store
+# redis  : queue / rate-limit (placeholder for later)
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mello-api
+    ports:
+      - "3001:3001"
+    env_file:
+      - .env
+    environment:
+      - QDRANT_URL=http://qdrant:6333
+      - REDIS_URL=redis://redis:6379
+      - PORT=3001
+    depends_on:
+      - qdrant
+      - redis
+    restart: unless-stopped
+
+  qdrant:
+    image: qdrant/qdrant:v1.11.0
+    container_name: mello-qdrant
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: unless-stopped
+
+  redis:
+    image: redis:7-alpine
+    container_name: mello-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+
+volumes:
+  qdrant_data:
+  redis_data:

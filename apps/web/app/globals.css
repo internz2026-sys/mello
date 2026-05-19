@@ -1,0 +1,23 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    background-color: #FAF6EE;
+  }
+
+  body {
+    background-color: #FAF6EE;
+    color: #1A1814;
+  }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  ::selection {
+    background-color: #E5DCC8;
+    color: #1A1814;
+  }
+}

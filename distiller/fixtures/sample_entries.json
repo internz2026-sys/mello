@@ -1,0 +1,44 @@
+[
+  {
+    "id": "entry_001",
+    "user_id": "test_user",
+    "created_at": "2026-05-10T07:14:00Z",
+    "kind": "morning",
+    "content": "Slept badly again. I keep waking up at 3am thinking about the conversation with dad on Sunday. He didn't even raise his voice — that's almost worse. I'm 31 and I still feel like the kid who hasn't measured up. I told myself last year I wouldn't let his opinion mean this much. I'm not sure I believed it then either."
+  },
+  {
+    "id": "entry_002",
+    "user_id": "test_user",
+    "created_at": "2026-05-11T22:30:00Z",
+    "kind": "evening",
+    "content": "Good day. Walked with Sarah at lunch — first time in weeks. She asked how the job hunt was going and I almost lied. I told her the truth, that I've been frozen for two months. She didn't fix it, just listened, and I felt lighter. Why do I keep forgetting that talking to people I trust helps? I want to be the kind of friend who asks for help before I'm drowning."
+  },
+  {
+    "id": "entry_003",
+    "user_id": "test_user",
+    "created_at": "2026-05-12T07:02:00Z",
+    "kind": "morning",
+    "content": "Got the email about the role at K. I should be excited. Mostly I'm afraid of telling dad if I take it because it's a step sideways and not up. Why is my first thought always what he'll think?"
+  },
+  {
+    "id": "entry_004",
+    "user_id": "test_user",
+    "created_at": "2026-05-13T20:11:00Z",
+    "kind": "evening",
+    "content": "I prayed today. First time since Easter. Not for anything specific, just sat in the car after the grocery run. Felt foolish at first and then quiet. I don't know what I believe right now. I just know I miss the quiet."
+  },
+  {
+    "id": "entry_005",
+    "user_id": "test_user",
+    "created_at": "2026-05-14T22:48:00Z",
+    "kind": "free",
+    "content": "Couldn't sleep. Bought another book I won't read. Three since March. I do this every time I'm stressed — buy things instead of dealing with things. It's not the money, it's the avoiding. I want to be the kind of person who can sit with discomfort without reaching for a distraction."
+  },
+  {
+    "id": "entry_006",
+    "user_id": "test_user",
+    "created_at": "2026-05-15T07:35:00Z",
+    "kind": "morning",
+    "content": "Sarah's birthday is next Tuesday. I almost forgot last year. I'm setting a reminder this time. The people who matter shouldn't have to remind me they exist."
+  }
+]

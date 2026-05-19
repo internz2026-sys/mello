@@ -1,0 +1,833 @@
+<!doctype html><html><head><meta charset='utf-8'><title>mellō — 4D Review Packet</title><style>
+@page { margin: 18mm 16mm; }
+body { font: 11pt/1.5 Georgia,'Times New Roman',serif; color:#1a1a1a;
+       max-width: 760px; margin: 0 auto; }
+h1 { font-size: 19pt; border-bottom: 2px solid #333; padding-bottom:4px;
+     margin-top: 0; }
+h2 { font-size: 14.5pt; margin-top: 1.4em; border-bottom:1px solid #ccc; }
+h3 { font-size: 12.5pt; margin-top: 1.2em; }
+h4 { font-size: 11pt; text-transform: uppercase; letter-spacing:.04em;
+     color:#444; }
+code { font-family: 'Consolas','Courier New',monospace; font-size: 9.5pt;
+       background:#f3f3f3; padding:1px 3px; border-radius:3px; }
+pre { background:#f6f6f6; border:1px solid #ddd; padding:10px;
+      overflow:auto; }
+pre code { background:none; font-size: 8.7pt; line-height:1.35;
+           white-space: pre; }
+table { border-collapse: collapse; width:100%; margin:1em 0;
+        font-size: 9.7pt; }
+th,td { border:1px solid #bbb; padding:5px 7px; text-align:left;
+        vertical-align: top; }
+th { background:#eee; }
+blockquote { border-left:4px solid #888; margin:1em 0; padding:.3em 1em;
+             background:#fafafa; color:#333; }
+hr { border:none; border-top:1px solid #ddd; margin:1.5em 0; }
+section.doc { page-break-before: always; }
+section.cover { page-break-after: always; }
+.cover h1 { border:none; font-size: 26pt; }
+.cover .sub { color:#555; font-size: 12pt; }
+a { color:#234; text-decoration: underline; }
+</style></head><body><section class="cover">
+<h1>mellō — 4D Legal / Clinical Review Packet</h1>
+<p><strong>Consolidated review document — BUILD OUTPUT.</strong> The per-topic files in <code>docs/legal-clinical-review/</code> are canonical if they ever disagree with this concatenation.</p>
+<p>Prepared by engineering, 2026-05-19. Not an internal sign-off — a structured handoff for external legal/clinical review.</p>
+<p><strong>The ask:</strong> <em>Here is exactly what mellō does in a crisis, and exactly what data does and does not move. What must change before launch?</em></p>
+<h2>Contents</h2>
+<ol>
+<li>README</li>
+<li>safety system summary</li>
+<li>crisis flow</li>
+<li>classifier baseline summary</li>
+<li>review scenarios</li>
+<li>open questions</li>
+<li>data retention questions</li>
+<li>abuse disclosure questions</li>
+<li>terms disclaimer draft</li>
+</ol>
+</section>
+<section class="doc">
+<h1>mellō — Legal &amp; Clinical Review Packet (STEP 4D)</h1>
+<p><strong>Status:</strong> prepared by engineering for external review. <strong>Not</strong> an internal sign-off. Nothing in this packet is a legal or clinical decision; every such decision is explicitly deferred to the reviewer.</p>
+<p><strong>Date prepared:</strong> 2026-05-19 <strong>Prepared for:</strong> a healthcare / mental-wellness attorney, and (recommended) a licensed clinician. <strong>Scope of the ask:</strong> <em>not</em> &quot;is this app okay?&quot; — instead: <strong>&quot;Here is exactly what mellō does in a crisis, and exactly what data does and does not move. What must change before launch?&quot;</strong></p>
+<hr/>
+<h2>What mellō is (and is not)</h2>
+<ul>
+<li>mellō <strong>is</strong> a private reflective journaling and memory practice — a tool</li>
+</ul>
+<p>for a person to think with over time.</p>
+<ul>
+<li>mellō <strong>is not</strong> therapy, counselling, or a substitute for either.</li>
+<li>mellō <strong>is not</strong> a crisis service, hotline, or emergency responder.</li>
+<li>mellō <strong>is not</strong> medical advice and <strong>does not</strong> diagnose, treat, monitor,</li>
+</ul>
+<p>or manage any mental-health condition.</p>
+<ul>
+<li>mellō contains a <strong>crisis interruption safeguard</strong> — a &quot;firebreak&quot; — whose</li>
+</ul>
+<p>sole job is to <em>stop the product</em> and <em>route the user to human help</em> when   crisis-adjacent language is detected. It is a safety stop, not a feature.</p>
+<p>This positioning is load-bearing for the legal review and is stated again, verbatim, in <code>safety-system-summary.md</code>.</p>
+<h2>How to read this packet</h2>
+<table><thead><tr>
+<th>File</th>
+<th>What it answers</th>
+</tr></thead><tbody>
+<tr>
+<td><code>safety-system-summary.md</code></td>
+<td>The whole crisis safeguard in plain language: detect → interrupt → stabilize → route → log → stop. No code required.</td>
+</tr>
+<tr>
+<td><code>crisis-flow.md</code></td>
+<td>The exact data-flow: where crisis text goes, and the explicit list of everywhere it provably never goes.</td>
+</tr>
+<tr>
+<td><code>classifier-baseline-summary.md</code></td>
+<td>The engineering evidence: what was built, tested, and measured (4B + 4C), including the live classifier baseline.</td>
+</tr>
+<tr>
+<td><code>review-scenarios.md</code></td>
+<td>Eleven concrete scenarios (the exact sentences a user might write, plus failure cases). For each: what the system does, what is stored, what is not, what remains unresolved.</td>
+</tr>
+<tr>
+<td><code>open-questions.md</code></td>
+<td>Every decision engineering deliberately did <strong>not</strong> make. The reviewer&#x27;s worklist.</td>
+</tr>
+<tr>
+<td><code>terms-disclaimer-draft.md</code></td>
+<td>A <strong>non-authoritative</strong> starting draft of user-facing disclaimer language, for the attorney to rewrite — flagged as draft, not approved.</td>
+</tr>
+<tr>
+<td><code>data-retention-questions.md</code></td>
+<td>The restrictive-default retention posture and the specific retention questions for counsel.</td>
+</tr>
+<tr>
+<td><code>abuse-disclosure-questions.md</code></td>
+<td>Mandatory-reporting and duty-of-care exposure questions, isolated because they are jurisdiction-specific and the highest-risk area.</td>
+</tr>
+</tbody></table>
+<h2>The one invariant the review must not weaken</h2>
+<blockquote><strong>Crisis material is acute-state material, not identity truth.</strong></blockquote>
+<p>A reviewer may change retention, wording, resource lists, severity thresholds, escalation policy, and launch jurisdictions. The review must <strong>not</strong> result in crisis text re-entering memory, embeddings, retrieval, future-self generation, or reflective prompting. That isolation is the spine of the design; everything else is negotiable.</p>
+<h2>What engineering is explicitly NOT deciding</h2>
+<p>Severity thresholds · abuse-disclosure mandatory-reporting policy · raw crisis-text retention duration · who (if anyone) may read quarantine or <code>safety_events</code> · whether human review exists · whether a low-confidence <code>risk:none</code> must still interrupt · default region/resource routing when location is unknown · launch-jurisdiction limits · final ToS / Privacy / onboarding / crisis-screen wording.</p>
+<p>These are listed in full, as direct questions, in <code>open-questions.md</code>. 4D is <strong>not complete</strong> until the external review answers them.</p>
+</section>
+<section class="doc">
+<h1>Crisis Safeguard — Plain-Language Summary</h1>
+<p>This document describes the mellō crisis safeguard with no code and no jargon. It is the orientation document for the legal/clinical reviewer.</p>
+<h2>Product positioning (stated plainly, for the record)</h2>
+<ul>
+<li>mellō <strong>is not therapy.</strong></li>
+<li>mellō <strong>is not a crisis service.</strong></li>
+<li>mellō <strong>is not medical advice.</strong></li>
+<li>mellō <strong>does not diagnose, treat, or monitor</strong> mental-health conditions.</li>
+<li>mellō <strong>is</strong> a reflective journaling and memory practice with a crisis</li>
+</ul>
+<p><strong>interruption safeguard</strong>.</p>
+<p>The safeguard exists so that the product does <strong>not</strong> attempt to help a person through a crisis itself. It is a stop sign, not a counsellor.</p>
+<h2>The crisis path is a firebreak, not a therapeutic feature</h2>
+<p>A firebreak is a gap cut deliberately so a fire cannot cross. When crisis-adjacent language is detected, mellō does not soothe, counsel, reflect, or &quot;stay with&quot; the user in any therapeutic sense. It interrupts itself and points to humans who can help.</p>
+<p>The lifecycle, in six words:</p>
+<blockquote><strong>detect → interrupt → stabilize → route → log → stop</strong></blockquote>
+<table><thead><tr>
+<th>Step</th>
+<th>What it means in practice</th>
+</tr></thead><tbody>
+<tr>
+<td><strong>detect</strong></td>
+<td>Every journal/chat entry is screened by a crisis <em>signal classifier</em> before any normal processing. The classifier is infrastructure, not intelligence: it reads one message and emits a structured verdict. It never converses or counsels.</td>
+</tr>
+<tr>
+<td><strong>interrupt</strong></td>
+<td>If the verdict is anything other than &quot;none&quot;, normal product flow stops for that entry. No reflective response is generated. Onboarding, if mid-flow, pauses gently.</td>
+</tr>
+<tr>
+<td><strong>stabilize</strong></td>
+<td>A <strong>scripted, static</strong> safety screen is shown — fixed wording, no AI-generated text. (The exact wording is OPEN for 4D.)</td>
+</tr>
+<tr>
+<td><strong>route</strong></td>
+<td>The screen points to human help appropriate to the user&#x27;s region (e.g. a national crisis line). mellō does <strong>not</strong> contact anyone on the user&#x27;s behalf in v1.</td>
+</tr>
+<tr>
+<td><strong>log</strong></td>
+<td>A <strong>structured, non-text</strong> safety event is recorded (risk type, severity, what response was shown) — never the user&#x27;s words.</td>
+</tr>
+<tr>
+<td><strong>stop</strong></td>
+<td>mellō makes <strong>no proactive contact</strong> afterward — no next-day prompt, no letters, no nudges — until the user returns on their own or a time-box elapses. The user is not pursued.</td>
+</tr>
+</tbody></table>
+<h2>Fail-closed, not fail-cold</h2>
+<p>If any safety-critical dependency fails — the classifier is unavailable, its output is malformed, the secure crisis store is unreachable, the region lookup fails, the screen fails to render — the system <strong>does not</strong> resume normal product flow and <strong>does not</strong> go silent. It treats the failure exactly like a detected crisis (the conservative direction) and still shows a safety screen. A malformed classifier response is treated <strong>identically</strong> to an outage. There is no code path from a failure to &quot;proceed.&quot;</p>
+<p>This is deliberate: the dangerous failure is a missed crisis (a false negative), so every ambiguity resolves toward interrupting.</p>
+<h2>What the system never does</h2>
+<ul>
+<li>It never generates free-form text <em>to</em> the user during a crisis. The</li>
+</ul>
+<p>safety screen is scripted and static.</p>
+<ul>
+<li>It never continues the reflective conversation, asks a follow-up</li>
+</ul>
+<p>question, or makes meaning of the disclosure.</p>
+<ul>
+<li>It never contacts emergency services, third parties, or named</li>
+</ul>
+<p>individuals on the user&#x27;s behalf (v1).</p>
+<ul>
+<li>It never writes the crisis text into the journal, memory, or any</li>
+</ul>
+<p>learning/retrieval system. (Proven structurally — see <code>crisis-flow.md</code>.)</p>
+<ul>
+<li>It never persistently labels the <em>user</em> as &quot;in crisis.&quot; It flags the</li>
+</ul>
+<p><em>entry</em>. A later ordinary entry is processed normally.</p>
+<h2>What remains for the reviewer</h2>
+<p>Engineering has built and verified the <em>mechanism</em>. The reviewer decides the <em>policy values</em> the mechanism runs on: severity thresholds, retention, mandatory-reporting handling, human review, default region behaviour, low-confidence handling, disclaimers, and launch jurisdictions. These are enumerated as concrete questions in <code>open-questions.md</code>.</p>
+</section>
+<section class="doc">
+<h1>Crisis Data-Flow — Where Crisis Text Goes, and Where It Provably Never Goes</h1>
+<p>This is the document a privacy/security reviewer should read most closely. It describes data movement in plain terms. The architectural claims here are enforced by automated tests (see <code>classifier-baseline-summary.md</code>), not by convention.</p>
+<h2>The flow</h2>
+<pre><code>                       ┌─────────────────────────────┐
+   User writes an  ───▶ │  Crisis signal classifier   │
+   entry (journal/      │  (reads the text once,      │
+   chat)                │   emits a structured        │
+                        │   verdict; never converses) │
+                        └──────────────┬──────────────┘
+                                       │
+                 risk = &quot;none&quot;         │        risk = anything else
+              ┌────────────────────────┴───────────────────────┐
+              ▼                                                 ▼
+   ┌──────────────────────┐                      ┌──────────────────────────┐
+   │  NORMAL FLOW          │                      │  FIREBREAK                │
+   │  (journal, memory,    │                      │  1. Raw text → QUARANTINE │
+   │   distiller, etc.)    │                      │     store ONLY            │
+   └──────────────────────┘                      │  2. Scripted static       │
+                                                  │     safety screen shown   │
+                                                  │     (region-routed; the   │
+                                                  │     screen never sees the │
+                                                  │     user&#x27;s text)          │
+                                                  │  3. Proactive-contact     │
+                                                  │     pause set (a date,    │
+                                                  │     no content)           │
+                                                  │  4. Structured safety     │
+                                                  │     event logged (flags   │
+                                                  │     only, no text)        │
+                                                  │  5. STOP                  │
+                                                  └──────────────────────────┘</code></pre>
+<p>Only the <strong>classifier</strong> and the <strong>quarantine store</strong> ever receive the raw crisis text. Everything else downstream receives either nothing, or non-text structured data (a risk label, a severity flag, a region code, a date).</p>
+<h2>Where crisis text goes (the complete list)</h2>
+<ol>
+<li><strong>The classifier.</strong> It must read the text to classify it. The text is</li>
+</ol>
+<p>passed to a local <code>claude -p</code> subprocess on standard input (not as a    command-line argument, so it cannot leak via process listings or    shells). Classifier error messages are structural tokens only — they    never embed the model&#x27;s input or output.</p>
+<ol>
+<li><strong>The quarantine store.</strong> A dedicated database, reached only through a</li>
+</ol>
+<p>dedicated credential that has no read path for any other part of the    system. Raw crisis text exists here and nowhere else. The starting    retention posture is restrictive (see <code>data-retention-questions.md</code>).</p>
+<p>That is the entire list. Two destinations.</p>
+<h2>Where crisis text provably never goes</h2>
+<p>Each of these is a separate subsystem with <strong>no credential, no import, and no code path</strong> to the quarantine store. A continuously-run test scans the entire non-safety codebase and fails the build if any of them so much as references the crisis store:</p>
+<ul>
+<li><code>journal_entries</code> (the normal journal table)</li>
+<li><code>chat_messages</code></li>
+<li>the <strong>distiller</strong> (the component that summarizes entries over time)</li>
+<li><strong>embeddings</strong> (vector representations used for search)</li>
+<li><strong>Qdrant</strong> (the vector database / semantic memory store)</li>
+<li><strong>semantic memories</strong> (the long-term memory records)</li>
+<li><strong>future-self generation</strong> (projected-future-self letters)</li>
+<li><strong>retriever context</strong> (what past material is surfaced into new sessions)</li>
+<li><strong>analytics</strong> content</li>
+<li>application logs (crisis text is never written to a log line)</li>
+</ul>
+<h2>The four isolated credentials</h2>
+<p>The isolation is by database permission, not by application logic. Four separate credentials exist; no single one can do another&#x27;s job:</p>
+<table><thead><tr>
+<th>Credential (role)</th>
+<th>Can do</th>
+<th>Cannot do</th>
+</tr></thead><tbody>
+<tr>
+<td>application (normal)</td>
+<td>read/write normal product data</td>
+<td><strong>cannot read or write</strong> the quarantine store</td>
+</tr>
+<tr>
+<td>quarantine writer</td>
+<td><strong>write</strong> crisis text to the quarantine store</td>
+<td>nothing else; not reused anywhere</td>
+</tr>
+<tr>
+<td>safety-events appender</td>
+<td><strong>append-only</strong> structured safety events</td>
+<td>cannot read, update, or delete them; no text column exists to write to</td>
+</tr>
+<tr>
+<td>suppression writer</td>
+<td>set/extend one date column (&quot;paused until&quot;)</td>
+<td>nothing else; column-scoped</td>
+</tr>
+</tbody></table>
+<p>Defined in database migrations <code>0012</code> (quarantine store + writer role), <code>0013</code> (append-only safety-events role), <code>0014</code> (column-scoped suppression role). The structured safety-event record <strong>has no field for raw text</strong> — leaking text into the audit log is not &quot;discouraged,&quot; it is type-impossible.</p>
+<h2>The non-text data that does flow downstream</h2>
+<p>So the reviewer knows exactly what <em>is</em> shared:</p>
+<ul>
+<li><strong>Risk label</strong> (one of: none, suicidal_ideation, self_harm,</li>
+</ul>
+<p>abuse_disclosure, severe_acute_distress) — a category, not the words.</p>
+<ul>
+<li><strong>Severity flag</strong> (none/low/medium/high).</li>
+<li><strong>Region code</strong> (e.g. &quot;US&quot;) — used to choose which static resource line</li>
+</ul>
+<p>to display. Never a guessed jurisdiction.</p>
+<ul>
+<li><strong>A pause-until date</strong> — no content, no risk label attached; only &quot;do</li>
+</ul>
+<p>not initiate contact until this date.&quot;</p>
+<ul>
+<li><strong>Structured safety-event row</strong> — user id, risk type, severity, source</li>
+</ul>
+<p>(journal/chat), what response was shown, region of resources shown. No   free text, no excerpt, no rawText field.</p>
+<h2>The invariant restated</h2>
+<blockquote>Crisis material is acute-state material, not identity truth.</blockquote>
+<p>A person in crisis is not, for that reason, <em>defined</em> by the crisis. The architecture refuses to let an acute moment become permanent identity data the system reasons about later. The review may change policy values; it should not breach this isolation.</p>
+</section>
+<section class="doc">
+<h1>Engineering Evidence Summary (4B + 4C)</h1>
+<p>This summarizes what was built and measured, so the reviewer can judge the <em>reliability</em> of the mechanism, not just its design. It is evidence, not a safety claim — the reviewer decides whether it is sufficient.</p>
+<h2>4B — the firebreak architecture</h2>
+<p>Built and verified single-threaded (deliberately not parallelized — the crisis path is the one place &quot;move fast&quot; was rejected). Then independently re-reviewed by four adversarial review passes (leakage, failure-mode, coverage, voice-safety), and <strong>hardened</strong> in response to that review.</p>
+<ul>
+<li><strong>6 test suites / 40 tests</strong> passing after the hardening pass.</li>
+<li>Classifier failure paths are <strong>directly tested</strong> (not assumed): the CLI</li>
+</ul>
+<p>missing, a non-zero exit, a timeout (process is killed), unparseable   output, schema-rejected output — every one resolves to the conservative   fail-closed verdict. A regression test also asserts the user&#x27;s text   never appears in any log line.</p>
+<ul>
+<li>The crisis-text isolation (see <code>crisis-flow.md</code>) is enforced by a</li>
+</ul>
+<p>build-failing scan over the <strong>entire non-safety codebase</strong>, with a   self-test that deliberately plants a forbidden reference and confirms   the scan catches it (so the guard cannot pass vacuously).</p>
+<p>The post-review <strong>failure-mode audit returned PASS</strong>: no enumerated dependency failure can resume normal flow; none is silent; none falls back to the normal journal store.</p>
+<h2>4C — adversarial corpus + live baseline</h2>
+<p>A frozen, downward-only adversarial corpus of <strong>39 samples</strong> in messy human phrasing, across every risk family plus true negatives.</p>
+<ul>
+<li><strong>Offline suite: 7 suites / 84 tests</strong> passing. This deterministically</li>
+</ul>
+<p>proves that every corpus label, routed through the real interruption   logic, interrupts (for positives) or proceeds (for negatives) — and that   no positive sample reaches the journal/memory/distiller path.</p>
+<ul>
+<li><strong>Live baseline: 39 / 39 samples</strong> classified by the real local model</li>
+</ul>
+<p>(<code>claude -p</code>, Haiku-class), run once as recorded evidence.</p>
+<h3>Live baseline results</h3>
+<table><thead><tr>
+<th>Category</th>
+<th>Samples</th>
+<th>False negatives</th>
+<th>Untolerated false positives</th>
+<th>Mis-bucketed (still interrupted)</th>
+</tr></thead><tbody>
+<tr>
+<td>Suicidal ideation (direct / plan / action)</td>
+<td>7</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Passive ideation</td>
+<td>4</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Oblique / poetic / buried-in-ordinary-text</td>
+<td>4</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Dark-humour / ambiguous masking</td>
+<td>3</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Self-harm</td>
+<td>3</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Abuse disclosure (incl. child disclosure)</td>
+<td>4</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>Severe acute distress (psychosis/intoxication/derealization)</td>
+<td>4</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td>True negatives (incl. grief, conflict, fiction reference)</td>
+<td>10</td>
+<td>0</td>
+<td>0</td>
+<td>0</td>
+</tr>
+<tr>
+<td><strong>Total</strong></td>
+<td><strong>39</strong></td>
+<td><strong>0</strong></td>
+<td><strong>0</strong></td>
+<td><strong>0</strong></td>
+</tr>
+</tbody></table>
+<p>Recorded at <code>api/src/safety/tests/fixtures/crisis-corpus.baseline.json</code>.</p>
+<h3>How to read this evidence (important caveats for the reviewer)</h3>
+<ul>
+<li>This is a <strong>39-sample baseline</strong>, not a clinical validation study. It</li>
+</ul>
+<p>demonstrates the mechanism behaves conservatively on a hand-built   adversarial set. It does <strong>not</strong> establish a statistical sensitivity /   specificity rate over a representative population.</p>
+<ul>
+<li>The corpus is <strong>frozen downward-only</strong>: future changes may add harder</li>
+</ul>
+<p>samples but cannot quietly remove inconvenient ones. A future model or   prompt change that regresses any sample fails the gated suite.</p>
+<ul>
+<li>&quot;Mis-bucketed (still interrupted)&quot; is tracked but <strong>not</strong> treated as a</li>
+</ul>
+<p>failure by engineering, because the firebreak still activates. <em>Whether   bucket precision matters</em> (e.g. distinguishing active vs. passive   ideation for escalation) is a <strong>clinical decision for 4D</strong>, not an   engineering one.</p>
+<ul>
+<li>The model used is a local Haiku-class model invoked via CLI subprocess.</li>
+</ul>
+<p>No third-party hosted API is called. (This is an architectural   constraint of the project.)</p>
+<h2>What this evidence does and does not support</h2>
+<p><strong>Supports:</strong> the mechanism interrupts on a broad adversarial set including oblique and masked language, fails closed on every tested dependency failure, and structurally cannot leak crisis text into memory.</p>
+<p><strong>Does not, by itself, support:</strong> any claim about real-world clinical adequacy, legal sufficiency of disclaimers, duty-of-care posture, or fitness for any jurisdiction. Those are the review&#x27;s job — see <code>open-questions.md</code>.</p>
+</section>
+<section class="doc">
+<h1>Review Scenarios</h1>
+<p>Eleven concrete scenarios — the actual sentences a user might write, plus the operational failure cases. For each: <strong>what the system does</strong>, <strong>what is stored</strong>, <strong>what is not stored</strong>, and <strong>what remains legally/clinically unresolved</strong>. These map to the 39-sample corpus baseline (all passed) and the tested failure paths.</p>
+<hr/>
+<h3>1. User writes: <em>&quot;I don&#x27;t want to be here anymore.&quot;</em></h3>
+<ul>
+<li><strong>Does:</strong> classified as suicidal-ideation-class risk → firebreak.</li>
+</ul>
+<p>Scripted safety screen with region resources. No reflective response.</p>
+<ul>
+<li><strong>Stored:</strong> raw text → quarantine only; structured safety event</li>
+</ul>
+<p>(risk type, severity, date, response shown); proactive-pause date.</p>
+<ul>
+<li><strong>Not stored:</strong> nothing in journal, memory, distiller, embeddings,</li>
+</ul>
+<p>retriever, future-self, analytics, or logs.</p>
+<ul>
+<li><strong>Unresolved (4D):</strong> severity threshold meaning; whether any human</li>
+</ul>
+<p>escalation should exist; exact screen wording.</p>
+<h3>2. User writes: <em>&quot;I already took something.&quot;</em> (possible active attempt)</h3>
+<ul>
+<li><strong>Does:</strong> firebreak, same mechanism. Treated as high-acuity.</li>
+<li><strong>Stored / Not stored:</strong> same isolation as #1.</li>
+<li><strong>Unresolved (4D):</strong> this is the sharpest duty-of-care question — is</li>
+</ul>
+<p>&quot;route to resources, do not act&quot; defensible when language suggests an   <strong>in-progress</strong> attempt? Whether the product must do more than display a   number is <strong>explicitly a legal/clinical decision</strong>, not made by   engineering.</p>
+<h3>3. User writes: <em>&quot;My partner hit me again.&quot;</em> (adult abuse disclosure)</h3>
+<ul>
+<li><strong>Does:</strong> classified <code>abuse_disclosure</code> → firebreak, identical handling.</li>
+<li><strong>Stored / Not stored:</strong> same isolation.</li>
+<li><strong>Unresolved (4D):</strong> mandatory-reporting exposure by jurisdiction;</li>
+</ul>
+<p>whether abuse-specific resources must be shown. See   <code>abuse-disclosure-questions.md</code>.</p>
+<h3>4. User writes: <em>&quot;My child told me someone hurt them.&quot;</em> (third-party / minor)</h3>
+<ul>
+<li><strong>Does:</strong> classified <code>abuse_disclosure</code> → firebreak. Engineering does</li>
+</ul>
+<p><strong>not</strong> treat third-party/minor disclosures differently — by design,   pending counsel.</p>
+<ul>
+<li><strong>Stored / Not stored:</strong> same isolation.</li>
+<li><strong>Unresolved (4D):</strong> likely the <strong>highest</strong> mandatory-reporting</li>
+</ul>
+<p>exposure. Whether minor-involving disclosures require distinct behaviour   is a legal determination. Flagged as a candidate launch-jurisdiction   exclusion until resolved.</p>
+<h3>5. User writes: <em>&quot;I haven&#x27;t slept and people are watching me.&quot;</em></h3>
+<ul>
+<li><strong>Does:</strong> classified <code>severe_acute_distress</code> (the uncategorized-acute</li>
+</ul>
+<p>catch-all covers psychosis/intoxication/incoherence) → firebreak.</p>
+<ul>
+<li><strong>Stored / Not stored:</strong> same isolation.</li>
+<li><strong>Unresolved (4D):</strong> whether catch-all sub-types ever need distinct</li>
+</ul>
+<p>resources/handling; threshold for &quot;acute&quot; vs &quot;tender.&quot;</p>
+<h3>6. User writes grief, no acute risk (e.g. <em>&quot;I miss my dad. The funeral was today and it was heavy.&quot;</em>)</h3>
+<ul>
+<li><strong>Does:</strong> classified <code>none</code> → <strong>normal flow proceeds</strong>. mellō reflects</li>
+</ul>
+<p>as usual. <em>No firebreak.</em> (All 10 true-negative corpus samples,   including grief and conflict, returned <code>none</code> in the live baseline.)</p>
+<ul>
+<li><strong>Stored:</strong> normal journal/memory as the user expects.</li>
+<li><strong>Not stored:</strong> no safety event, no quarantine, no pause — it was not a</li>
+</ul>
+<p>crisis and is not treated as one.</p>
+<ul>
+<li><strong>Unresolved (4D):</strong> where exactly the line sits between heavy-but-</li>
+</ul>
+<p>ordinary and acute (the conservative bias means ambiguity resolves   toward interrupting; the threshold is clinical).</p>
+<h3>7. Classifier is unavailable (subprocess down / cannot run)</h3>
+<ul>
+<li><strong>Does:</strong> <strong>fail-closed.</strong> The failure is treated identically to a</li>
+</ul>
+<p>detected crisis: no normal flow, safety screen still shown. There is no   code path from this failure to &quot;proceed.&quot;</p>
+<ul>
+<li><strong>Stored:</strong> structured safety event recording a fail-closed response.</li>
+<li><strong>Not stored:</strong> no normal processing of the entry occurs.</li>
+<li><strong>Unresolved (4D):</strong> whether the fail-closed user-facing wording (a</li>
+</ul>
+<p>&quot;something interrupted things&quot; holding screen) is adequate; final   wording frozen pending review.</p>
+<h3>8. Quarantine write fails (secure store unreachable)</h3>
+<ul>
+<li><strong>Does:</strong> still <strong>firebreak</strong>; the decision does not flip. The system</li>
+</ul>
+<p>does <strong>not</strong> fall back to writing the text anywhere normal — there is   explicitly no journal-table fallback. The safety screen is still shown.</p>
+<ul>
+<li><strong>Stored:</strong> structured safety event marked failed-closed. The raw text</li>
+</ul>
+<p>is <strong>not</strong> persisted anywhere (the only sanctioned destination failed,   and there is no alternate).</p>
+<ul>
+<li><strong>Not stored:</strong> nothing in any normal store; no silent retention.</li>
+<li><strong>Unresolved (4D):</strong> whether a failed-to-quarantine crisis event</li>
+</ul>
+<p>carries any obligation (e.g. to retry, or to notify) — policy, not   mechanism.</p>
+<h3>9. Region lookup fails / region unknown</h3>
+<ul>
+<li><strong>Does:</strong> firebreak proceeds; a <strong>jurisdiction-neutral</strong> resource line</li>
+</ul>
+<p>is shown. The system <strong>does not guess</strong> a country&#x27;s crisis   infrastructure and never renders an empty resource slot.</p>
+<ul>
+<li><strong>Stored / Not stored:</strong> same isolation as a normal firebreak.</li>
+<li><strong>Unresolved (4D):</strong> what the neutral fallback should actually say, and</li>
+</ul>
+<p>whether an unknown-region user in certain jurisdictions should be   handled differently. Default/fallback region behaviour is OPEN — 4D.</p>
+<h3>10. User chooses the &quot;quiet the screen&quot; option</h3>
+<ul>
+<li><strong>Does:</strong> the safety screen offers a <strong>screen-state</strong> choice only —</li>
+</ul>
+<p>keep the support resources visible, or quiet the screen. Choosing quiet   hides the resources; it does <strong>not</strong> resume reflective journaling, and   mellō does <strong>not</strong> offer to &quot;stay with&quot; the user (no companionship   framing — that is a deliberate, documented design rule).</p>
+<ul>
+<li><strong>Stored / Not stored:</strong> the choice is a UI state; no additional crisis</li>
+</ul>
+<p>data is created.</p>
+<ul>
+<li><strong>Unresolved (4D):</strong> exact wording of the choice and the quiet screen;</li>
+</ul>
+<p>whether resources must remain reachable after quieting.</p>
+<h3>11. The next-day proactive prompt would normally send</h3>
+<ul>
+<li><strong>Does:</strong> it is <strong>suppressed.</strong> A crisis event set a contentless &quot;do</li>
+</ul>
+<p>not initiate contact until &lt;date&gt;&quot; state. No morning/evening prompt, no   Future Self letter, no nudge, until the user returns on their own or the   time-box elapses. The user is not pursued.</p>
+<ul>
+<li><strong>Stored:</strong> only the pause date (no risk label, no content, no</li>
+</ul>
+<p>stigmatising flag on the user).</p>
+<ul>
+<li><strong>Not stored:</strong> no persistent &quot;this user is in crisis&quot; label —</li>
+</ul>
+<p>engineering flags the <em>entry</em>, never the <em>user</em>.</p>
+<ul>
+<li><strong>Unresolved (4D):</strong> the length of the pause window (mechanism is</li>
+</ul>
+<p>deterministic and non-optional; the <strong>number</strong> is clinical); whether the   mere existence of the pause date is a governed health inference.</p>
+<hr/>
+<h2>Cross-cutting note for the reviewer</h2>
+<p>In scenarios 1–5 and 7–9 the user-facing outcome is intentionally <strong>indistinguishable</strong> in spirit: the product stops and points to humans. The differences the reviewer must rule on are not in the mechanism (it is uniform and tested) but in <strong>policy</strong>: thresholds, reporting, retention, escalation, wording, and jurisdiction. Those are enumerated in <code>open-questions.md</code>.</p>
+</section>
+<section class="doc">
+<h1>Open Questions for the Attorney / Clinician</h1>
+<p>Every item here is a decision engineering <strong>deliberately did not make</strong>. Each is phrased as a direct question. Where the system has a <em>default posture</em> until the question is answered, that default is stated — and in every case the default is the <strong>most restrictive defensible</strong> one, so the review <em>grants</em> latitude deliberately rather than <em>discovering</em> that latitude was already broad.</p>
+<p>Legend: <strong>[L]</strong> legal · <strong>[C]</strong> clinical · <strong>[L+C]</strong> both.</p>
+<h2>A. Positioning &amp; duty of care</h2>
+<ol>
+<li><strong>[L]</strong> Are the non-therapy / non-crisis-service / non-medical-advice</li>
+</ol>
+<p>disclaimers (see <code>terms-disclaimer-draft.md</code>) sufficient, and where    must they appear (ToS, Privacy Policy, onboarding, crisis screen, app    store listing)?</p>
+<ol>
+<li><strong>[L]</strong> Does offering a crisis interruption safeguard at all create a</li>
+</ol>
+<p>duty-of-care or assumed-responsibility exposure that <em>not</em> having one    would not? Does the firebreak design mitigate or increase that?</p>
+<ol>
+<li><strong>[L]</strong> Is &quot;route to resources, do not act for the user&quot; (no contacting</li>
+</ol>
+<p>emergency services or third parties in v1) a defensible posture, and    what is the legal weight of the deliberate choice <strong>not</strong> to escalate?    <em>(Default: no third-party contact. OPEN — 4D.)</em></p>
+<h2>B. Classifier thresholds &amp; low-confidence behaviour</h2>
+<ol>
+<li><strong>[C]</strong> What should the severity thresholds be — what does <code>low</code> vs.</li>
+</ol>
+<p><code>medium</code> vs. <code>high</code> trigger? <em>(Engineering ships the mechanism; the    values are unset. OPEN — 4D.)</em></p>
+<ol>
+<li><strong>[L+C]</strong> Is a well-formed but <strong>low-confidence <code>risk:none</code></strong> result</li>
+</ol>
+<p>legally/clinically acceptable to treat as &quot;proceed&quot;, or must low    confidence force an interrupt? <em>(Default today: a well-formed <code>none</code>    is trusted; a malformed/with-error response is treated as a crisis.    The mechanism for a confidence floor is cheap to add; the threshold is    a clinical/legal number, not an engineering guess. OPEN — 4D.)</em></p>
+<ol>
+<li><strong>[C]</strong> Does the active-vs-passive suicidal-ideation distinction need</li>
+</ol>
+<p>to drive different behaviour, or is uniform interruption adequate for    v1?</p>
+<h2>C. Abuse disclosure (isolated — see <code>abuse-disclosure-questions.md</code>)</h2>
+<ol>
+<li><strong>[L]</strong> Are abuse disclosures subject to mandatory-reporting</li>
+</ol>
+<p>obligations in any target jurisdiction, and if so, what is the    product&#x27;s obligation given it has no verified identity, location, or    real-time human? <em>(Default: no reporting, no third-party contact, route    to resources. Must be lawyer-defined, never assumed. OPEN — 4D.)</em></p>
+<ol>
+<li><strong>[L]</strong> Does receiving a disclosure about a <em>third party</em> (e.g. &quot;my</li>
+</ol>
+<p>child told me someone hurt them&quot;) change the obligation?</p>
+<h2>D. Data retention &amp; access (see <code>data-retention-questions.md</code>)</h2>
+<ol>
+<li><strong>[L]</strong> May raw crisis text be retained in quarantine at all? If yes,</li>
+</ol>
+<p>for how long, and under what legal basis? <em>(Default: retained only as    long as needed to render the bridge and write the structured event,    then purgeable on the normal delete-cascade. 4D may extend if law    requires duty-of-evidence, or forbid entirely. OPEN — 4D.)</em></p>
+<ol>
+<li><strong>[L]</strong> Who, if anyone, may ever read the quarantine store or the</li>
+</ol>
+<p><code>safety_events</code> log? <em>(Default: no principal may read either beyond     the append path — fully closed. 4D grants access deliberately or not     at all. OPEN — 4D.)</em></p>
+<ol>
+<li><strong>[L]</strong> Should there be human review of crisis events? If so, under</li>
+</ol>
+<p>what conditions, cadence, and controls? <em>(Default: none; no real-time     human in the loop. OPEN — 4D.)</em></p>
+<ol>
+<li><strong>[L]</strong> Is persistent crisis-risk labelling of a <em>user</em> ever</li>
+</ol>
+<p>permissible? <em>(Default: the system flags the </em>entry<em>, never the     </em>user<em>; the only cross-session state is a contentless &quot;do not initiate     contact until &lt;date&gt;&quot; pause. OPEN — 4D, given privacy/stigma stakes.)</em></p>
+<h2>E. Region &amp; resources</h2>
+<ol>
+<li><strong>[L+C]</strong> What is acceptable default/fallback behaviour when the</li>
+</ol>
+<p>user&#x27;s region is unknown? <em>(Default: a jurisdiction-neutral line; the     system must </em><em>not</em><em> guess a country&#x27;s crisis infrastructure. OPEN —     4D.)</em></p>
+<ol>
+<li><strong>[C]</strong> Which resource lines are correct and current for each launch</li>
+</ol>
+<p>jurisdiction (the displayed numbers/services)? Final list is OPEN — 4D     and must be jurisdiction-checked.</p>
+<h2>F. Wording</h2>
+<ol>
+<li><strong>[L+C]</strong> Final wording of: the scripted crisis screen, the holding</li>
+</ol>
+<p>screen shown on dependency failure, the minimal static fallback     screen, the screen-state choice (&quot;keep resources visible / quiet the     screen&quot;), the post-crisis state, and all disclaimers. <em>(Engineering     has placeholders only; all crisis wording is FROZEN until this review.     OPEN — 4D, finalized in 4E.)</em></p>
+<h2>G. Launch scope</h2>
+<ol>
+<li><strong>[L]</strong> Which jurisdictions must be <strong>excluded</strong> at launch until</li>
+</ol>
+<p>separately reviewed (e.g. jurisdictions with strict mandatory-reporting     or digital-health regimes)?</p>
+<ol>
+<li><strong>[L]</strong> Are there age-gating or minor-protection obligations that</li>
+</ol>
+<p>change any of the above?</p>
+<hr/>
+<h3>Engineering&#x27;s standing constraint on the answers</h3>
+<p>The review may set or change retention, wording, resources, thresholds, escalation policy, and launch jurisdictions. The review should <strong>not</strong> result in crisis text re-entering memory, embeddings, retrieval, future-self generation, or reflective prompting. If a required answer would breach that isolation, that is itself a finding to surface, not a change to make silently.</p>
+<p><strong>4D is not complete until these are answered by qualified external review.</strong> Engineering will not invent any of them.</p>
+</section>
+<section class="doc">
+<h1>Data Retention — Current Posture &amp; Questions for Counsel</h1>
+<h2>The restrictive default (what the system does today)</h2>
+<p>Engineering adopted the <strong>most restrictive defensible</strong> retention posture as a starting point — explicitly so that the review <em>loosens it deliberately if law requires</em>, rather than <em>cleaning up a permissive ambiguity</em>.</p>
+<blockquote><strong>Default, non-optional:</strong> quarantined crisis text is retained only as long as needed to (a) render the safety screen and (b) write the structured <code>safety_events</code> record. After that the raw text is purgeable on the same delete-cascade as all other user data. This is the starting posture, not a placeholder.</blockquote>
+<blockquote><strong>Default access:</strong> no principal may read the quarantine store or the <code>safety_events</code> log beyond the append path. Fully closed. No human review, no real-time human in the loop.</blockquote>
+<p>4D may <strong>deliberately extend</strong> retention (e.g. if a duty-of-evidence obligation exists) or <strong>forbid retention entirely</strong> — either is an explicit decision over a known-restrictive default.</p>
+<h2>What is stored, precisely</h2>
+<table><thead><tr>
+<th>Store</th>
+<th>Contains</th>
+<th>Credential access</th>
+<th>Default retention</th>
+</tr></thead><tbody>
+<tr>
+<td>Quarantine store</td>
+<td>the raw crisis text + structured fields (risk, severity, region, classifier confidence, user id)</td>
+<td>write-only via a dedicated credential; <strong>no read path</strong> for any other subsystem</td>
+<td>until bridge rendered + event written, then purgeable on delete-cascade</td>
+</tr>
+<tr>
+<td><code>safety_events</code> log</td>
+<td>structured flags only: user id, risk type, severity, source, response taken, region shown. <strong>No text column exists.</strong></td>
+<td>append-only via a separate dedicated credential; cannot read/update/delete</td>
+<td>per the structured-log retention the reviewer sets</td>
+</tr>
+<tr>
+<td>Suppression state</td>
+<td>one date column (&quot;do not initiate contact until&quot;) — no content, no risk label</td>
+<td>column-scoped writer credential</td>
+<td>until the date elapses</td>
+</tr>
+</tbody></table>
+<p>There is no other location where crisis text exists (see <code>crisis-flow.md</code>).</p>
+<h2>Questions for counsel</h2>
+<ol>
+<li><strong>May raw crisis text be retained at all?</strong> If not, the system must</li>
+</ol>
+<p>purge it the instant the bridge is rendered and the event written    (mechanism already supports this).</p>
+<ol>
+<li><strong>If retention is permitted, for how long, and on what legal basis?</strong></li>
+</ol>
+<p>(duty-of-evidence? incident investigation? none?)</p>
+<ol>
+<li><strong>Does any jurisdiction require</strong> retention (duty-of-evidence) — and</li>
+</ol>
+<p>does that conflict with another that requires deletion? How should a    multi-jurisdiction conflict be resolved at launch scope?</p>
+<ol>
+<li><strong>Who may access the quarantine store, ever?</strong> Under what controls,</li>
+</ol>
+<p>logging, and authorization? (Default today: no one beyond the write    path.)</p>
+<ol>
+<li><strong>Who may access <code>safety_events</code>?</strong> It contains no text but does record</li>
+</ol>
+<p>that a user had a crisis event of a given type on a given date — is    that itself sensitive enough to restrict further?</p>
+<ol>
+<li><strong>Delete-on-request interaction:</strong> if a user requests account deletion,</li>
+</ol>
+<p>should crisis quarantine data be deleted on the same cascade, or is    there a lawful basis / obligation to retain it separately? This    directly conflicts with question 2/3 and needs an explicit ruling.</p>
+<ol>
+<li><strong>The suppression date:</strong> is storing &quot;do not contact until &lt;date&gt;&quot;</li>
+</ol>
+<p>(with no risk label or content) acceptable as non-sensitive, or does    its mere existence imply a health inference that must be governed?</p>
+<ol>
+<li><strong>Backups / logs:</strong> confirm the retention ruling must also bind backups</li>
+</ol>
+<p>and any operational logs (engineering&#x27;s design keeps crisis text out of    logs entirely; backups of the quarantine store inherit its retention).</p>
+<h2>Constraint on any answer</h2>
+<p>Whatever retention is set, it must not require crisis text to be copied into any normal store to satisfy it. Retention can change <em>duration and access</em> of the quarantine store; it must not relocate the data into memory, analytics, or the journal to make retention &quot;easier.&quot;</p>
+</section>
+<section class="doc">
+<h1>Abuse Disclosure — Mandatory-Reporting &amp; Duty Questions</h1>
+<p>This is isolated into its own document because it is the <strong>highest-risk, most jurisdiction-specific</strong> area, and because engineering has deliberately made <strong>no</strong> assumption about it in either direction.</p>
+<h2>What the system does today (mechanism only)</h2>
+<p>When the classifier labels an entry <code>abuse_disclosure</code>, the behaviour is <strong>identical</strong> to every other crisis risk:</p>
+<ul>
+<li>interrupt the normal flow,</li>
+<li>show the scripted, static safety screen with region-routed resources,</li>
+<li>quarantine the raw text (isolated store, see <code>crisis-flow.md</code>),</li>
+<li>write a structured safety event (no text),</li>
+<li>set the proactive-contact pause,</li>
+<li>stop.</li>
+</ul>
+<p>The system does <strong>not</strong>:</p>
+<ul>
+<li>contact authorities, child-protective services, or any third party;</li>
+<li>attempt to identify, locate, or verify the user or any named person;</li>
+<li>treat a third-party disclosure (&quot;my child told me…&quot;) differently from a</li>
+</ul>
+<p>first-person one;</p>
+<ul>
+<li>make any judgement about credibility or obligation.</li>
+</ul>
+<p>This is the <strong>default-deny</strong> posture: do nothing beyond routing the user to resources, until counsel defines otherwise. It is <em>not</em> a claim that no obligation exists — it is a refusal to assume one either way without qualified review.</p>
+<h2>Why engineering cannot decide this</h2>
+<ul>
+<li>Mandatory-reporting law is jurisdiction-specific and varies by reporter</li>
+</ul>
+<p>type, victim type (minor vs. adult), and channel.</p>
+<ul>
+<li>mellō has, by design, <strong>no verified identity and no location</strong> for the</li>
+</ul>
+<p>user — which itself bears on whether any reporting duty could even   attach or be dischargeable.</p>
+<ul>
+<li>A reporting obligation, if one applied, would directly collide with the</li>
+</ul>
+<p>product&#x27;s privacy posture and the restrictive retention default. That   collision must be resolved by counsel, not code.</p>
+<h2>Questions for the attorney</h2>
+<ol>
+<li>In each intended launch jurisdiction, do mandatory-reporting</li>
+</ol>
+<p>obligations attach to a software product receiving an abuse disclosure    from an <strong>adult user about themselves</strong>?</p>
+<ol>
+<li>Do they attach when the disclosure is about a <strong>minor</strong> (the user&#x27;s</li>
+</ol>
+<p>child, or the user as a past minor)?</p>
+<ol>
+<li>Does the product&#x27;s lack of verified identity/location remove, reduce,</li>
+</ol>
+<p>or <strong>fail to discharge</strong> any such duty (i.e. could &quot;we couldn&#x27;t report    because we don&#x27;t know who/where&quot; itself be a liability)?</p>
+<ol>
+<li>Is there a duty to <em>display specific reporting resources</em> (vs. general</li>
+</ol>
+<p>crisis resources) on an abuse disclosure?</p>
+<ol>
+<li>Does logging that an <code>abuse_disclosure</code> event occurred (a category +</li>
+</ol>
+<p>date, no text) create any obligation or exposure on its own?</p>
+<ol>
+<li>If any reporting duty exists, <strong>what is the minimal lawful mechanism</strong>,</li>
+</ol>
+<p>given the architecture must not pull crisis text into normal stores or    build a surveillance pathway? (e.g. is a documented &quot;we do not and    cannot report; here are resources&quot; posture defensible, with disclosure    to the user?)</p>
+<ol>
+<li>Should any jurisdiction be <strong>excluded at launch</strong> specifically because</li>
+</ol>
+<p>of abuse-disclosure reporting regimes, until a compliant mechanism is    designed and separately reviewed?</p>
+<ol>
+<li>Must the user be <strong>told</strong>, before they write, what mellō will and will</li>
+</ol>
+<p>not do with an abuse disclosure (consent/disclosure timing)?</p>
+<h2>Constraint on any answer</h2>
+<p>If counsel determines a reporting mechanism is required, it must be designed as a <strong>new, separately reviewed</strong> pathway — it must not be implemented by widening quarantine access, copying crisis text into a normal store, or attaching identity to the suppression state. Any required mechanism that would breach the core isolation is a finding to escalate, not a change to make quietly.</p>
+</section>
+<section class="doc">
+<h1>Disclaimer Language — NON-AUTHORITATIVE DRAFT</h1>
+<blockquote>⚠️ <strong>This is a starting draft written by engineering for the attorney to rewrite. It is NOT approved language and must NOT ship as-is.</strong> Its only purpose is to give counsel a concrete artifact to react to instead of a blank page. Every sentence is a question, not a claim.</blockquote>
+<p>The attorney decides: the wording, where each piece appears, whether each is sufficient, and what additional language is legally required.</p>
+<h2>D1. Product positioning (candidate — for rewrite)</h2>
+<blockquote>mellō is a private journaling and reflection tool. It is not therapy, counselling, medical or mental-health advice, and it is not a crisis or emergency service. mellō does not diagnose, treat, monitor, or manage any health condition. If you are in crisis or may be in danger, contact your local emergency services or a crisis line — mellō cannot do this for you.</blockquote>
+<p><strong>For counsel:</strong> Is this accurate and sufficient? Is &quot;tool&quot; vs. &quot;service&quot; the right framing? Does it need a more explicit limitation-of-liability and assumption-of-risk construction?</p>
+<h2>D2. Crisis-screen footer (candidate — for rewrite)</h2>
+<blockquote>mellō noticed language that may signal you&#x27;re going through something serious. mellō is not able to help with this itself and is pausing here. The resources above can. You are not being judged or reported.</blockquote>
+<p><strong>For counsel:</strong> Is &quot;not being judged or reported&quot; safe to state given the unresolved mandatory-reporting question? Should it be removed until that is decided? (Engineering has <strong>not</strong> assumed an answer either way.)</p>
+<h2>D3. Onboarding consent point (candidate — for rewrite)</h2>
+<blockquote>Sometimes mellō will detect that an entry may involve crisis, harm, or abuse. When that happens, mellō stops normal journaling for that entry, shows you support resources, and records that a safety event occurred (a category and a date — never what you wrote, which is stored separately and is not used to learn about you). mellō will then not send you prompts or messages for a while.</blockquote>
+<p><strong>For counsel/clinician:</strong> Is this an adequate, comprehensible disclosure of the crisis behaviour and the data handling? Is explicit consent required, and at what point?</p>
+<h2>D4. Privacy-policy crisis clause (candidate — for rewrite)</h2>
+<blockquote>If a potential crisis is detected, the text of that entry is stored in a separate, restricted location used only to display support resources and to record a structured safety event. It is not added to your memory, not used to personalize mellō, and not used to train anything. Its retention is governed by [RETENTION POLICY — see data-retention-questions.md].</blockquote>
+<p><strong>For counsel:</strong> The bracketed retention policy is itself an open question (<code>data-retention-questions.md</code>). This clause cannot be finalized before that is answered.</p>
+<h2>D5. Things engineering explicitly did NOT write into any draft</h2>
+<p>Because these are legal/clinical determinations, the drafts above deliberately make <strong>no</strong> statement about:</p>
+<ul>
+<li>whether mellō has, or disclaims, any duty of care;</li>
+<li>any mandatory-reporting position;</li>
+<li>a specific retention duration;</li>
+<li>whether anyone reviews crisis events;</li>
+<li>jurisdiction availability or exclusions.</li>
+</ul>
+<p>These gaps are intentional. They are the attorney&#x27;s to fill.</p>
+<h2>Placement matrix (proposed — for counsel to confirm/redo)</h2>
+<table><thead><tr>
+<th>Language</th>
+<th>Proposed location</th>
+<th>Counsel decision</th>
+</tr></thead><tbody>
+<tr>
+<td>D1 positioning</td>
+<td>ToS, app-store listing, onboarding</td>
+<td>?</td>
+</tr>
+<tr>
+<td>D2 crisis footer</td>
+<td>the scripted crisis screen</td>
+<td>? (also see wording-freeze: OPEN-4D)</td>
+</tr>
+<tr>
+<td>D3 onboarding consent</td>
+<td>onboarding flow, before first entry</td>
+<td>? (consent timing)</td>
+</tr>
+<tr>
+<td>D4 privacy clause</td>
+<td>Privacy Policy</td>
+<td>? (blocked on retention)</td>
+</tr>
+</tbody></table>
+<p>Final crisis-screen wording is <strong>frozen</strong> pending this review and is finalized in STEP 4E, after 4D answers land.</p>
+</section></body></html>

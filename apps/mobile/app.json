@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "mellō",
+    "slug": "mello-mobile",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "scheme": "mello",
+    "userInterfaceStyle": "light",
+    "backgroundColor": "#FAF6EE",
+    "splash": {
+      "backgroundColor": "#FAF6EE",
+      "resizeMode": "contain"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "co.melloapp.mobile"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#FAF6EE"
+      },
+      "package": "co.melloapp.mobile"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-font"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

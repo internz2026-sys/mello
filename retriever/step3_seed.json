@@ -1,0 +1,81 @@
+[
+  {
+    "kind": "wound",
+    "stability": "evolving",
+    "sensitivity": "tender",
+    "summary": "At 31, the user still measures decisions and their sense of self against their father's likely reaction. Their first internal response to news — even good news like a job opportunity — is often concern about how their father will receive it rather than what they themselves feel about it, and they want to be free of this but are not yet.",
+    "evidence": [
+      "entry_001",
+      "entry_003"
+    ],
+    "emotions": [
+      "shame",
+      "vulnerability",
+      "fear"
+    ],
+    "themes": [
+      "family",
+      "identity",
+      "self-image",
+      "doubt"
+    ],
+    "relationships": [
+      "dad"
+    ],
+    "spiritual_themes": [],
+    "importance": 0.85,
+    "identity_weight": 0.8,
+    "first_observed_at": "2026-05-15T20:45:40.504638+00:00",
+    "last_reinforced_at": "2026-05-15T20:45:40.504638+00:00"
+  },
+  {
+    "kind": "pattern",
+    "stability": "evolving",
+    "sensitivity": "tender",
+    "summary": "When stress or restlessness builds, the user reaches for a purchase — often a book — instead of sitting with the discomfort. They recognize this as a recurring habit and want to be the kind of person who can stay with the feeling without buying their way out of it.",
+    "evidence": [
+      "entry_005"
+    ],
+    "emotions": [
+      "restlessness",
+      "frustration",
+      "shame"
+    ],
+    "themes": [
+      "consumption",
+      "habit",
+      "anxiety"
+    ],
+    "relationships": [],
+    "spiritual_themes": [],
+    "importance": 0.7,
+    "identity_weight": 0.6,
+    "first_observed_at": "2026-05-15T20:45:40.504638+00:00",
+    "last_reinforced_at": "2026-05-15T20:45:40.504638+00:00"
+  },
+  {
+    "kind": "wound",
+    "stability": "stable",
+    "sensitivity": "sealed",
+    "summary": "A private memory the user asked be held and never raised unprompted: an incident with their father in adolescence they have never spoken about.",
+    "evidence": [
+      "entry_sealed_synthetic"
+    ],
+    "emotions": [
+      "shame",
+      "grief"
+    ],
+    "themes": [
+      "family",
+      "self-image"
+    ],
+    "relationships": [
+      "dad"
+    ],
+    "spiritual_themes": [],
+    "importance": 0.9,
+    "identity_weight": 0.85,
+    "first_observed_at": "2026-03-01T10:00:00+00:00",
+    "last_reinforced_at": "2026-03-01T10:00:00+00:00"
+  }
+]
