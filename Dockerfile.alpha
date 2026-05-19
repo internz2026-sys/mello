@@ -26,8 +26,13 @@ FROM node:20-bookworm-slim AS runtime
 WORKDIR /app
 ENV NODE_ENV=production \
     RETRIEVER_PYTHON_BIN=python3 \
-    RETRIEVER_ENTRYPOINT=/app/retriever/retriever.py \
-    ANTHROPIC_API_KEY=""
+    RETRIEVER_ENTRYPOINT=/app/retriever/retriever.py
+# ANTHROPIC_API_KEY is deliberately left UNSET (not empty-set): Claude
+# auth only defers to it when set & non-empty, so unset is the correct
+# state for CLI/OAuth-token auth, and it avoids the buildkit
+# SecretsUsedInArgOrEnv lint. Runtime defense lives in
+# docker-compose.alpha.yml, which forces it empty and thereby OVERRIDES
+# env_file if an operator wrongly adds it. CLI-only directive / AD-2.
 
 # Python for the (Phase-0) retriever subprocess.
 RUN apt-get update \
