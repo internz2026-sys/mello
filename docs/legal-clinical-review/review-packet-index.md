@@ -1,5 +1,13 @@
 # mellō — 4D Legal/Clinical Review Packet · Index & Cover
 
+> **Re-scoped 2026-05-19 — PUBLIC-LAUNCH REVIEW GATE.** This packet is
+> **retained, not retired.** Its requirement timing changed from
+> *"required before anything runs"* to **"required before public launch /
+> real scale."** A constrained internal alpha may proceed under
+> `docs/research-evidence-dossier.md` §6 in the interim; every OPEN
+> question here still blocks public launch and crisis-policy
+> finalization. Substance of the packet is unchanged.
+
 **For:** healthcare / mental-wellness attorney; (recommended) a licensed
 clinician familiar with suicide-risk triage; (if multi-country launch) a
 privacy / data-protection advisor.

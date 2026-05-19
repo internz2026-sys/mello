@@ -115,6 +115,10 @@ These were flagged in `audits/voice-audit.md` but consciously deferred:
 
 ### S2. The OPEN — 4D items are blocking, not deferrable
 - `docs/safety-boundary.md` marks every clinical/legal decision as **OPEN — 4D**: severity thresholds, abuse-disclosure mandatory-reporting exposure, default/fallback `resource_region`, persistent user-state flagging, retention policy, human-review policy, real-time-human-in-loop. These are not "later polish." They gate launch. 4D (legal/clinical review) is the actual critical path for STEP 4 and cannot be closed by engineering.
+- **Timing amended 2026-05-19 (4D-R):** these remain **public-launch** blockers, not "nothing runs" blockers. A constrained internal alpha may proceed under `docs/research-evidence-dossier.md` §6 (adults-only, invite-only, no paid, no claims, no analytics/ads on crisis content, firebreak unchanged). The 4D packet is retained, re-scoped as the public-launch gate (`review-packet-index.md` banner). None of the OPEN values may be invented by engineering in the interim.
+
+### 4D-R. Research-backed interim safety basis
+- **Doc:** `docs/research-evidence-dossier.md`. Records evidence that the design *direction* (firebreak, human routing, quarantine/minimization, regression-tested classifier) aligns with SAMHSA/WHO/JMIR/FTC and PH RA 10173 / RA 11036 — **citations flagged `[verify]`, not yet human-checked; internal basis only.** §6 = locked interim alpha constraints; §7 = what research cannot decide (still OPEN-4D). Not legal/clinical advice; does not change crisis code or policy values.
 
 ## Pre-launch infrastructure follow-ups
 
@@ -142,6 +146,18 @@ These were flagged in `audits/voice-audit.md` but consciously deferred:
 - **P2 before scale:** `AD-8` Qdrant provider-scoped collection migration undocumented; `AD-9` Rooms 2–7 blocked on 501-stub future-self/reflection services (gates MO-5); `AD-10` no job/queue substrate (A2 saga + suppression + distiller assume it); `AD-11` non-safety Claude CLI lacks the classifier's error discipline.
 - **P3 acceptable:** `AD-12` billing module absent; `AD-13` retriever shell-out; `AD-14` duplicated voice primitives.
 - Specs only; remediation is later explicit work. P0 batch is scaffolding/docs and must not touch any safety module or 4D-gated policy.
+
+## Internal alpha (STEP 5)
+
+### S5. Internal alpha environment — single VPS, docker-compose
+- **Spec:** `docs/step5-internal-alpha.md`. Deploy target decided: one VPS (Postgres + Qdrant + API-with-colocated-Python-retriever) behind a private alpha gate. Runs under 4D-R §6 constraints; firebreak unchanged.
+- **S5-1** API startup guard: refuse to boot unless the four DB URLs are four *distinct* credentials (operationalizes AD-1; new non-crisis guard + unit test).
+- **S5-2** deploy-time safety smoke suite: blocks deploy if firebreak doesn't fire / crisis text reaches logs|journal|memory / fail-closed regressed / public registration reachable / disclaimer bypassable. Verification only, no new crisis logic.
+- **S5-3** `deploy/docker-compose.alpha.yml` + API image colocating the retriever (resolves AD-7/AD-3).
+- **S5-4** fail-safe-OFF feature flags (paid, public signup, onboarding free-text, future-self-on-unbuilt-services).
+- **S5-5** disable public registration; admin invite-seed only (adults-only attested at invite).
+- **S5-6** static, non-bypassable alpha disclaimer gate (not therapy / not a crisis service; static copy, not model-generated, separate from the firebreak screen).
+- Specs only; §7 of the spec gives the safe-now build order. Nothing 4D-gated is unlocked.
 
 ## Convention to maintain
 
