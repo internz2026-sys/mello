@@ -1,0 +1,58 @@
+# mellō — INTERNAL ALPHA stack (STEP 5-3 / S5-3b)
+#
+# Single VPS. Postgres is EXTERNAL (Supabase; four distinct least-priv
+# roles via the *_DATABASE_URL secrets). No Postgres container. No Redis
+# (AD-10: reserved, not wired — do not ship unused infra). Qdrant is
+# internal-only (not host/public published).
+#
+# Secrets come ONLY from the operator-managed env-file (git-ignored,
+# excluded from the build context). ANTHROPIC_API_KEY is forced empty
+# (AD-2). The S5-1 guard fails the boot if the four credentials are not
+# isolated — `restart` is bounded so that failure stays VISIBLE and is
+# never masked by an infinite restart loop.
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.alpha
+    image: mello-api-alpha
+    env_file:
+      - ./deploy/alpha.env        # operator-managed; NOT in git/context
+    environment:
+      - NODE_ENV=production
+      - QDRANT_URL=http://qdrant:6333
+      - ANTHROPIC_API_KEY=        # explicit empty: CLI-only (AD-2)
+      # CLAUDE_CODE_OAUTH_TOKEN must be supplied via ./deploy/alpha.env
+      # (runtime only — never in the image or this file).
+    depends_on:
+      - qdrant
+    ports:
+      # Exposed for the operator's reverse proxy / invite gate ONLY.
+      # Bind to loopback so it is not world-reachable without the proxy.
+      - "127.0.0.1:3001:3001"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3001/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    # Bounded, NOT unless-stopped: a credential-isolation guard failure
+    # must surface, not loop forever silently.
+    restart: "on-failure:3"
+    networks: [mello_alpha]
+
+  qdrant:
+    image: qdrant/qdrant:v1.11.0
+    # No published ports — reachable only on the internal network.
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: "on-failure:3"
+    networks: [mello_alpha]
+
+volumes:
+  qdrant_data:
+
+networks:
+  mello_alpha:
+    driver: bridge

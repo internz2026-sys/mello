@@ -1,0 +1,61 @@
+# mellō — INTERNAL ALPHA image (STEP 5-3 / S5-3a)
+#
+# Single self-contained image: built API + Python retriever colocated +
+# Claude CLI. Build context = REPO ROOT (must see both api/ and
+# retriever/) so RETRIEVER_ENTRYPOINT resolves by construction (fixes
+# AD-3). NO secret is baked here:
+#   - ANTHROPIC_API_KEY is explicitly EMPTY (CLI-only directive; AD-2;
+#     and it would otherwise take precedence over the OAuth token).
+#   - CLAUDE_CODE_OAUTH_TOKEN is DELIBERATELY NOT set in any layer — it is
+#     injected ONLY at runtime via the operator env-file/secret.
+#   - .dockerignore keeps every .env out of the build context.
+# The S5-1 credential-isolation guard runs at process start (main.ts),
+# so a collapsed-credential deploy fails closed before serving.
+
+# ---- build stage -----------------------------------------------------
+FROM node:20-bookworm-slim AS builder
+WORKDIR /app
+COPY api/package.json api/package-lock.json* ./
+RUN npm ci --no-audit --no-fund
+COPY api/tsconfig.json api/nest-cli.json ./
+COPY api/src ./src
+RUN npm run build
+
+# ---- runtime stage ---------------------------------------------------
+FROM node:20-bookworm-slim AS runtime
+WORKDIR /app
+ENV NODE_ENV=production \
+    RETRIEVER_PYTHON_BIN=python3 \
+    RETRIEVER_ENTRYPOINT=/app/retriever/retriever.py \
+    ANTHROPIC_API_KEY=""
+
+# Python for the (Phase-0) retriever subprocess.
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends python3 python3-pip \
+ && rm -rf /var/lib/apt/lists/*
+
+# Claude CLI — invoked non-interactively by the classifier/distiller.
+# Pin to match the verified host line (2.1.x); operator may bump. The
+# CLI authenticates at RUNTIME via CLAUDE_CODE_OAUTH_TOKEN (env, not
+# baked). NOTE: never pass --bare (it ignores the OAuth token).
+RUN npm install -g @anthropic-ai/claude-code@2 --no-audit --no-fund \
+ && claude --version
+
+# API production deps + built output.
+COPY api/package.json api/package-lock.json* ./
+RUN npm ci --omit=dev --no-audit --no-fund
+COPY --from=builder /app/dist ./dist
+
+# Retriever tree colocated; RETRIEVER_ENTRYPOINT above points here.
+COPY retriever/ ./retriever/
+RUN pip3 install --no-cache-dir --break-system-packages \
+      -r ./retriever/requirements.txt
+
+# Non-root.
+RUN useradd --create-home --uid 10001 mello \
+ && chown -R mello:mello /app
+USER mello
+
+EXPOSE 3001
+# main.ts runs assertDistinctSafetyCredentials() before binding the port.
+CMD ["node", "dist/main.js"]

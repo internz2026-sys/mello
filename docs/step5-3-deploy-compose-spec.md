@@ -5,13 +5,15 @@ written in this pass.** Infrastructure composition only — no crisis
 code, classifier, bridge wording, retention, or policy is changed.
 
 > ## DECISIONS LOCKED (2026-05-19)
-> - **§9 → 9a:** Claude CLI installed in the api image; auth via a
->   long-lived **Claude Code OAuth token injected as a runtime secret**
->   (no `ANTHROPIC_API_KEY`, no interactive login, no baked credential).
->   **Pre-build blocker:** the exact token env-var / setup command must
->   be verified against the *installed* `claude` CLI version before the
->   Dockerfile hard-codes it (do not assume; treat as `[verify]`). 9b
->   (mounted host cred dir) is the documented fallback.
+> - **§9 → 9a (VERIFIED 2026-05-19):** Claude CLI in the api image; auth
+>   via env var **`CLAUDE_CODE_OAUTH_TOKEN`** (confirmed for Claude Code
+>   v2.1.x). `claude setup-token` mints a ~1-year subscription token
+>   (browser OAuth once, operator-side, off-image); the env var → fully
+>   non-interactive `claude -p`, no `ANTHROPIC_API_KEY`, no browser, no
+>   trust prompt, no `~/.claude` mount. Caveats baked into the build:
+>   `--bare` MUST NOT be used (ignores the token); `ANTHROPIC_API_KEY`
+>   MUST be empty (it would take precedence); token is **runtime-only**,
+>   never in any image layer. 9b fallback unused. `[verify]` cleared.
 > - **§3 → Supabase, four roles:** no Postgres container. The four
 >   `*_DATABASE_URL` are four distinct least-privilege roles on the
 >   external Supabase Postgres. VPS = `api` + `qdrant` only. Isolation is

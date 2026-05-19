@@ -3,6 +3,11 @@
 .env.local
 .env.*.local
 
+# Operator-managed deploy secrets — NEVER commit (e.g. deploy/alpha.env).
+# The matching *.env.example templates ARE committed.
+deploy/*.env
+!deploy/*.env.example
+
 # Python
 __pycache__/
 *.py[cod]

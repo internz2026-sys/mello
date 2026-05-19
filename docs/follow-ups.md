@@ -159,10 +159,12 @@ These were flagged in `audits/voice-audit.md` but consciously deferred:
 - **S5-6** static, non-bypassable alpha disclaimer gate (not therapy / not a crisis service; static copy, not model-generated, separate from the firebreak screen).
 - Specs only; §7 of the spec gives the safe-now build order. Nothing 4D-gated is unlocked.
 
-### S5-3. Alpha compose / Docker (spec locked; build gated)
-- **Spec:** `docs/step5-3-deploy-compose-spec.md`. Decisions locked: **9a** Claude CLI in-image, auth via runtime-injected Claude Code OAuth token (no API key/interactive/baked cred); **Supabase four-roles**, no Postgres container (VPS = api+qdrant).
-- **Pre-build blocker [verify]:** confirm the exact Claude Code OAuth-token env var / setup command for the *installed* `claude` CLI version before the Dockerfile references it. Do not assume the name. 9b (mounted host cred dir) is the fallback if unavailable.
-- Build items (gated on the verify above): **S5-3a** multi-stage api image (Node+Python+`retriever/`+CLI; `RETRIEVER_ENTRYPOINT` absolute, fixes AD-3) · **S5-3b** `docker-compose.alpha.yml` (api+qdrant, internal qdrant, no restart-mask of the S5-1 guard) · **S5-3c** `.dockerignore` (no `.env`/secrets/`.git` in build context) · **S5-3d** `scripts/deploy-smoke.sh` (S5-2 against `ALPHA_BASE_URL`, non-zero = failed deploy) · **S5-3e** operator runbook. Specs only; implementation is the next explicit task.
+### S5-3. Alpha compose / Docker (spec locked; artifacts built)
+- **Spec:** `docs/step5-3-deploy-compose-spec.md`. Decisions locked: **9a** Claude CLI in-image; **Supabase four-roles**, no Postgres container (VPS = api+qdrant).
+- **[verify] CLEARED 2026-05-19:** confirmed (Claude Code v2.1.x) — env var `CLAUDE_CODE_OAUTH_TOKEN`, minted by `claude setup-token` (~1yr, subscription, browser-once off-image), fully non-interactive, no API key. Caveats baked in: no `--bare`, `ANTHROPIC_API_KEY` forced empty, token runtime-only (never in an image layer). 9b fallback unused.
+- **Built:** **S5-3a** `Dockerfile.alpha` (root context; Node+Python+`retriever/`+Claude CLI; `RETRIEVER_ENTRYPOINT=/app/retriever/retriever.py` absolute → fixes AD-3; non-root; `ANTHROPIC_API_KEY=""`) · **S5-3b** `docker-compose.alpha.yml` (api+qdrant only; qdrant internal; api on 127.0.0.1 behind operator proxy; `restart: on-failure:3` so the S5-1 guard failure stays visible) · **S5-3c** root `.dockerignore` (excludes all `.env`/secrets/`.git`/bulk/`*.spec.ts`) · **S5-3d** `scripts/deploy-smoke.sh` (S5-2 gate; non-zero = no deploy) · **S5-3e** `docs/step5-3-operator-runbook.md`.
+- **Validated:** `docker compose -f docker-compose.alpha.yml config` → VALID (Docker 29.2.0, via throwaway env since removed). App tests unaffected (9 suites/100 green). `deploy/alpha.env.example` added; `.gitignore` updated so `deploy/*.env` can never be committed (`!deploy/*.env.example` kept).
+- **MODE: LOCAL ONLY (current, 2026-05-19).** Testing is local docker-compose on the dev machine; **VPS deferred** (artifacts retained unchanged as the eventual VPS path). Runbook §L = local quickstart; VPS sections retained for later. All safety invariants apply locally (S5-1 guard, deploy-smoke gate, no API key, invite/adults-only). Image `docker build` not yet run locally (operator step in §L).
 
 ## Convention to maintain
 

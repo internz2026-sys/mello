@@ -1,0 +1,36 @@
+# Build context = repo root (Dockerfile.alpha needs api/ + retriever/).
+# This file is a SECURITY boundary: it keeps credentials and bulk out of
+# the image. Anything that could carry a secret must be excluded.
+
+# --- secrets: never into an image layer ---
+**/.env
+**/.env.*
+!**/.env.example          # placeholders only; harmless, not required but allowed
+**/*.pem
+**/*.key
+**/.claude/.credentials.json
+**/alpha.env
+deploy/*.env
+
+# --- bulk / build output / vcs ---
+.git
+**/node_modules
+**/dist
+**/.next
+**/.expo
+**/.turbo
+**/coverage
+**/__pycache__
+**/*.pyc
+**/.venv
+**/venv
+
+# --- not needed in the alpha image ---
+distiller/                # batch tool, not in the request path
+e2e/
+apps/                     # web/mobile are deployed separately
+audits/
+logs/
+docs/legal-clinical-review/*.pdf
+docs/legal-clinical-review/*.html
+**/*.spec.ts              # tests are run in CI, not shipped in the image
