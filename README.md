@@ -1,5 +1,7 @@
 # mellō
 
+![phase 0 — soul first](https://img.shields.io/badge/phase_0-soul_first-64748b?style=flat-square)
+
 > *A quieter place to think.*
 >
 > *For the long arc of who you were made to be.*
