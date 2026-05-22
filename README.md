@@ -67,7 +67,7 @@ To run the distiller prototype:
 ```bash
 cd distiller
 pip install -r requirements.txt
-cp .env.example .env  # add your Anthropic API key
+claude --version  # distiller calls Claude via the Claude Code CLI — no Anthropic API key needed
 python distiller.py --in fixtures/sample_entries.json --out output/memories.json
 ```
 
