@@ -94,14 +94,17 @@ reflective memory system with a voice,” not a chatbot. Voice docs in
 | STEP 5 local bring-up (Postgres container + 9b host-Claude mount) | IN PROGRESS — see below |
 | 4E final crisis wording / A2 crisis arms / onboarding free-text / Rooms 2–7 | GATED |
 
-## Commit history (this dedicated repo; history rewritten 2026-05-22 — hashes below are post-rewrite)
+## Commit history (history rewritten 2026-05-22 to drop the prior name; snapshot below — run `git log` for current)
 
-- `1a4292b` Phase-0 checkpoint: voice + memory engine + STEP 4 firebreak + specs
-- `98ea9cb` docs: research-backed alpha path + STEP 5 deploy plan (4D-R pivot)
-- `e9ff63d` feat(alpha): S5-1 credential isolation guard + S5-2 deploy smoke
-- `03a0d85` docs(alpha): single-vps compose plan + Claude auth boundary
-- `3d32100` feat(alpha): local-first compose + deploy-smoke runbook
-- `7c6d6c3` fix(alpha): unset ANTHROPIC_API_KEY in Dockerfile.alpha
+- `2562b39` mellō Phase-0 checkpoint: voice + memory engine + STEP 4 crisis firebreak (4B–4D prep), specs
+- `ec021e1` docs: define research-backed alpha path and step 5 deploy plan
+- `ef1a1e5` feat(alpha): add credential isolation guard and deploy safety smoke tests
+- `cded629` docs(alpha): specify single-vps compose plan and claude cli auth boundary
+- `2d86c5c` feat(alpha): add local-first compose and deploy-smoke runbook
+- `27adc9a` fix(alpha): unset (not empty-set) ANTHROPIC_API_KEY in Dockerfile.alpha
+- `6071b99` docs: add SESSION-STATE continuity knowledgebase (account/machine-independent)
+- `7a6e2c5` refactor: rename to the mello ASCII slug across identifiers, paths, hooks
+- _(+ a follow-up commit recording these post-rewrite hashes)_
 
 ## CURRENT WORK — local alpha bring-up (uncommitted)
 
