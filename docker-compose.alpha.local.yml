@@ -1,0 +1,80 @@
+# mellō — INTERNAL ALPHA, LOCAL-ONLY stack (STEP 5-3, local variant)
+#
+# Differs from docker-compose.alpha.yml (the VPS-path file, retained
+# unchanged) ONLY for local testing:
+#   - adds a local `postgres` (no Supabase). Migrations + the local
+#     login-user bootstrap run via the postgres init hook.
+#   - Claude auth = OPTION 9b: the host's existing login is bind-mounted
+#     READ-ONLY (no token minted; no ANTHROPIC_API_KEY).
+#   - api published on 127.0.0.1 only.
+# Safety invariants unchanged: S5-1 boot guard, deploy-smoke gate,
+# distinct credentials, no API key, restart bounded so a guard failure
+# stays visible.
+
+services:
+  postgres:
+    image: postgres:16
+    env_file:
+      - ./deploy/alpha.env          # provides POSTGRES_PASSWORD (local, generated)
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_DB=postgres
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+      - ./backend/migrations:/migrations:ro
+      - ./deploy/local/initdb:/docker-entrypoint-initdb.d:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    restart: "on-failure:3"
+    networks: [mello_alpha]
+
+  qdrant:
+    image: qdrant/qdrant:v1.11.0
+    volumes:
+      - qdrant_data:/qdrant/storage
+    restart: "on-failure:3"
+    networks: [mello_alpha]
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.alpha
+    image: mello-alpha:local
+    env_file:
+      - ./deploy/alpha.env
+    environment:
+      - NODE_ENV=production
+      - QDRANT_URL=http://qdrant:6333
+      - ANTHROPIC_API_KEY=          # explicit empty: overrides env_file if ever added (AD-2)
+    volumes:
+      # OPTION 9b — host Claude login, READ-ONLY, single file only so the
+      # CLI can still write its own cache/sessions in a writable ~/.claude.
+      - "${USERPROFILE}/.claude/.credentials.json:/home/mello/.claude/.credentials.json:ro"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      qdrant:
+        condition: service_started
+    ports:
+      - "127.0.0.1:3001:3001"
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://localhost:3001/healthz').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+    # Bounded, NOT unless-stopped: an S5-1 credential-guard failure must
+    # surface, not loop forever silently.
+    restart: "on-failure:3"
+    networks: [mello_alpha]
+
+volumes:
+  pg_data:
+  qdrant_data:
+
+networks:
+  mello_alpha:
+    driver: bridge

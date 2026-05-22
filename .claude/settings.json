@@ -29,7 +29,47 @@
       "Bash(RUN_LIVE_CLASSIFIER=1 npx jest crisis-corpus --silent)",
       "Bash(sed -n '14,40p' backend/migrations/0010_safety_events.sql)",
       "Bash(sed -n '30,55p' backend/migrations/0012_safety_quarantine.sql)",
-      "Bash(grep -oE \"[A-Z_]{3,}\")"
+      "Bash(grep -oE \"[A-Z_]{3,}\")",
+      "Bash(git -C c:/Users/Admin/Documents/mello status --porcelain)",
+      "Bash(git -C c:/Users/Admin/Documents/mello add docs/)",
+      "Bash(git -C c:/Users/Admin/Documents/mello status --porcelain --cached)",
+      "Bash(claude setup-token *)",
+      "Bash(python -c \"import sys,json; d=json.load\\(sys.stdin\\); print\\(json.dumps\\(d.get\\('hooks','NO hooks key'\\),indent=2\\)\\) if isinstance\\(d,dict\\) else print\\('not a dict'\\)\")"
+    ],
+    "additionalDirectories": [
+      "c:\\Users\\Admin\\.claude\\projects\\c--Users-Admin-Documents-mello\\memory"
+    ]
+  },
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:\\Users\\Admin\\Documents\\mello\\.claude\\hooks\\session-start.py\""
+          }
+        ]
+      }
+    ],
+    "SessionEnd": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:\\Users\\Admin\\Documents\\mello\\.claude\\hooks\\session-end.py\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python \"C:\\Users\\Admin\\Documents\\mello\\.claude\\hooks\\idle-watchdog.py\""
+          }
+        ]
+      }
     ]
   }
 }

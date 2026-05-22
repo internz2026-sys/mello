@@ -295,8 +295,8 @@ Canon (`voice/character-bible.md:208-214, 250-258`): The crisis path is **script
 
 3. **low — `mello` (no macron) as an ASCII slug is everywhere and intentional.**
    - Container names (`mello-api`, `mello-qdrant`, `mello-redis`, `mello-pg`), npm package names (`mello-api`, `mello-web`, `mello-mobile`, `@mello/e2e`), env var prefixes (`MELLO_NOTICER_MODEL`, `MELLO_DISTILLER_MODEL`), Qdrant collection (`mello_memories`), filenames (`project_mello.md`), bundle identifiers (`co.melloapp.mobile`).
-   - **Status:** ASCII-safe slugs are appropriate for these contexts (Docker, npm, Java reverse-domain). No action needed unless the rename intent is to ASCII-rename as well (`mello → mello`), which is not stated in the brief.
-   - **Unspecified:** Whether the ASCII slug should also be updated. Flag for product decision.
+   - **Status:** RESOLVED 2026-05-22 — the ASCII slug was renamed to `mello` across all technical identifiers (containers, npm names, env-var prefixes, Qdrant collection, filenames, bundle IDs) per explicit product decision.
+   - **Note:** ASCII-safe slugs remain appropriate for these contexts (Docker, npm, Java reverse-domain); only the slug spelling changed.
 
 ---
 

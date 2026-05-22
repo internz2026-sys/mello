@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { Pool } from 'pg';
 
 import type {
@@ -74,8 +74,12 @@ class PgSafetyEventStore implements SafetyEventStore {
 export class SafetyEventsAppendService {
   private readonly log = new Logger(SafetyEventsAppendService.name);
 
+  // @Optional(): `SafetyEventStore` is a TS interface (no DI token).
+  // Nest passes undefined; the default PgSafetyEventStore() applies —
+  // identical to the unit-test path. No crisis behaviour change; the
+  // INSERT-only dedicated-credential store is unchanged.
   constructor(
-    private readonly store: SafetyEventStore = new PgSafetyEventStore(),
+    @Optional() private readonly store: SafetyEventStore = new PgSafetyEventStore(),
   ) {}
 
   async append(input: SafetyEventInput): Promise<SafetyEventResult> {

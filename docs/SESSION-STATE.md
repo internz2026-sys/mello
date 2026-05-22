@@ -6,7 +6,14 @@ account, any machine (just `git clone`) — can reconstruct full context by
 reading this file first. **If you are a fresh session: read this top to
 bottom, then `docs/follow-ups.md`, then `CLAUDE.md`.**
 
-**Last updated:** 2026-05-20.
+**Last updated:** 2026-05-22.
+
+> **All identifiers, paths, and slugs use the ASCII `mello`** (brand mellō).
+> Repo path: `c:\Users\Admin\Documents\mello`. Hooks
+> (SessionStart / SessionEnd / Stop) are registered in
+> `.claude/settings.json`. Local transcripts and project memory live under
+> the project key `c--Users-Admin-Documents-mello`. Git history was rewritten
+> on 2026-05-22 so no commit content references the prior name.
 
 ---
 
@@ -14,10 +21,9 @@ bottom, then `docs/follow-ups.md`, then `CLAUDE.md`.**
 
 1. **Same machine, any Claude account:** `claude --resume` in
    `C:\Users\Admin\Documents\mello` and pick session
-   `0e1082ad-a35a-472d-ac84-1927548aa7e9` (verbatim transcript, ~11 MB,
-   at `~/.claude/projects/c--Users-Admin-Documents-mello/`). Account
-   switch does NOT affect it — transcripts are local files, not
-   account-bound.
+   `0e1082ad-a35a-472d-ac84-1927548aa7e9` (verbatim ~11 MB transcript under
+   the project key `c--Users-Admin-Documents-mello`). Account switch does
+   NOT affect this — transcripts are local files, not account-bound.
 2. **Different machine / fresh session:** clone the repo, read this file
    + `docs/follow-ups.md`. The verbatim transcript only travels if you
    copied `…/0e1082ad-….jsonl` (see "Verbatim backup" below).
@@ -88,7 +94,7 @@ reflective memory system with a voice,” not a chatbot. Voice docs in
 | STEP 5 local bring-up (Postgres container + 9b host-Claude mount) | IN PROGRESS — see below |
 | 4E final crisis wording / A2 crisis arms / onboarding free-text / Rooms 2–7 | GATED |
 
-## Commit history (this dedicated repo — `git init` was inside mello/)
+## Commit history (this dedicated repo; history rewritten 2026-05-22 — hashes below are post-rewrite)
 
 - `1a4292b` Phase-0 checkpoint: voice + memory engine + STEP 4 firebreak + specs
 - `98ea9cb` docs: research-backed alpha path + STEP 5 deploy plan (4D-R pivot)

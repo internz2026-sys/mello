@@ -1,47 +1,65 @@
 #!/usr/bin/env python
-"""Stop hook with asyncRewake — fires when Claude finishes a response.
+"""Stop hook — non-blocking idle detector for the mellō knowledgebase.
 
-Sleeps 5 minutes in the background. If still alive at the end (the user hasn't
-sent another turn — which would have killed this background hook), drops an
-idle marker and exits with code 2 to wake the model with a reminder to flush
-the knowledgebase.
+Runs instantly on every Stop (no sleep). It records the timestamp of each
+Stop and compares against the previous one. If the gap since the last turn
+exceeded the idle threshold — i.e. the user stepped away and has now come
+back — it nudges (once) to flush the knowledgebase before continuing.
 
-This is the closest available approximation of "user idle for 5 minutes" given
-Claude Code's hook surface. There is no native idle-detection event.
+This replaces the earlier 5-minute `time.sleep` design, which relied on an
+unsupported "asyncRewake" notion: Stop hooks are synchronous, so a long
+sleep would either hit the timeout or add latency after every response.
+
+Mechanism: exit code 2 returns the stderr text to Claude as a reminder.
+The `stop_hook_active` flag (provided on stdin) guards against re-firing
+during the resulting continuation, so there is no loop.
 """
 import datetime
 import json
 import os
 import sys
-import time
 
 PROJECT_ROOT = r"C:\Users\Admin\Documents\mello"
-IDLE_MARKER = os.path.join(PROJECT_ROOT, ".mello-idle-marker")
+STATE_FILE = os.path.join(PROJECT_ROOT, ".mello-last-stop")
 IDLE_SECONDS = 300  # 5 minutes
 
-# Read session_id from stdin if available
 try:
     data = json.load(sys.stdin) if not sys.stdin.isatty() else {}
 except Exception:
     data = {}
-session_id = data.get("session_id", "unknown")
 
-# Sleep — if the user submits a new turn, the harness kills this process
-time.sleep(IDLE_SECONDS)
+stop_hook_active = bool(data.get("stop_hook_active", False))
 
-# We survived the sleep, so the user has been idle for 5+ minutes
-ts = datetime.datetime.now().isoformat(timespec="seconds")
+now = datetime.datetime.now()
+now_ts = now.timestamp()
+
+# Previous stop timestamp (None on first stop of a fresh checkout/session).
+prev_ts = None
 try:
-    with open(IDLE_MARKER, "w", encoding="utf-8") as f:
-        f.write(f"session_id={session_id} idle_since={ts}\n")
+    with open(STATE_FILE, encoding="utf-8") as f:
+        prev_ts = float(f.read().strip())
 except Exception:
-    pass
+    prev_ts = None
 
-# Output a wake-up message and exit code 2 (asyncRewake trigger)
-msg = (
-    "5 minutes of user idle detected. Consider updating the mellō knowledgebase "
-    "now (project_mello.md and/or in-repo docs) so progress persists if the "
-    "session ends abruptly."
-)
-sys.stdout.write(msg)
-sys.exit(2)
+# Always record this stop for the next comparison.
+try:
+    with open(STATE_FILE, "w", encoding="utf-8") as f:
+        f.write(str(now_ts))
+except Exception:
+    pass  # never block stop on disk errors
+
+# If we are already inside a stop-hook-triggered continuation, do not re-fire.
+if stop_hook_active:
+    sys.exit(0)
+
+# Nudge once if the user was idle longer than the threshold between turns.
+if prev_ts is not None and (now_ts - prev_ts) > IDLE_SECONDS:
+    idle_min = int((now_ts - prev_ts) // 60)
+    sys.stderr.write(
+        f"[mello] ~{idle_min} min elapsed since the last turn. If meaningful "
+        "progress was made, consider flushing the knowledgebase "
+        "(docs/SESSION-STATE.md and/or project_mello.md) before continuing."
+    )
+    sys.exit(2)
+
+sys.exit(0)

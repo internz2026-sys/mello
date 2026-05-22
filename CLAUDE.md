@@ -29,9 +29,13 @@ Two locations:
 - **Project memory** (auto-loaded): `C:\Users\Admin\.claude\projects\c--Users-Admin\memory\project_mello.md`
 - **Source of truth** (in-repo): `voice/`, `distiller/`, `README.md`
 
-A SessionEnd hook drops `.mello-pending-memory-update`. A Stop hook with a 5-min
-`asyncRewake` does the same if you go idle without closing. The next SessionStart
-detects either marker and reviews recent work before proceeding.
+A SessionEnd hook drops `.mello-pending-memory-update`; the next SessionStart
+detects it and reviews recent work before proceeding. A Stop hook
+(`idle-watchdog.py`) runs instantly on every turn and, if more than 5 minutes
+elapsed since the previous turn (you stepped away and came back), nudges once to
+flush the knowledgebase before continuing — it does this by comparing timestamps,
+not by sleeping. All three hooks are registered under `hooks` in
+`.claude/settings.json`.
 
 When you update memory, prefer adding to `project_mello.md` for narrative context
 about decisions, and to the in-repo files for product-source-of-truth content.

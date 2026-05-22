@@ -7,6 +7,9 @@
 # The matching *.env.example templates ARE committed.
 deploy/*.env
 !deploy/*.env.example
+# Generated LOCAL Postgres login-user bootstrap (contains real local
+# passwords). The migration applier 00-apply-migrations.sh IS committed.
+deploy/local/initdb/01-local-logins.sql
 
 # Python
 __pycache__/
@@ -32,6 +35,7 @@ retriever/output/
 # Hook state markers (transient)
 .mello-pending-memory-update
 .mello-idle-marker
+.mello-last-stop
 
 # Editors
 .vscode/

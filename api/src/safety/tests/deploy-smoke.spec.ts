@@ -19,11 +19,14 @@
  *    not bypassable. Skipped (not vacuously passed) without a target,
  *    mirroring the RUN_LIVE_CLASSIFIER pattern.
  */
+import { NestFactory } from '@nestjs/core';
+
 import {
   assertDistinctSafetyCredentials,
   CredentialIsolationError,
 } from '../../common/credential-isolation';
 import { FAIL_CLOSED_VERDICT, type CrisisVerdict } from '../../schemas';
+import { SafetyModule } from '../safety.module';
 import {
   CrisisInterruptService,
   type ScreenInput,
@@ -129,6 +132,23 @@ describe('S5-2 · Block A — deployment-invariant safety re-assertions', () => 
     expect(d.decision).toBe('firebreak');
     expect(JSON.stringify(t.events.append.mock.calls)).not.toContain(SECRET);
   });
+
+  // Regression for the pre-existing 4B DI bug found during the first real
+  // boot (interface-typed store params → Nest could not resolve
+  // QuarantineService / SafetyEventsAppendService). The unit tests
+  // hand-construct these services, so only a real Nest container catches
+  // it. This boots SafetyModule through the actual DI container.
+  it('SafetyModule resolves through the real Nest DI container (boot smoke)', async () => {
+    const app = await NestFactory.create(SafetyModule, { logger: false });
+    try {
+      // Resolving the keystone proves the whole safety graph wired.
+      expect(app.get(CrisisInterruptService)).toBeInstanceOf(
+        CrisisInterruptService,
+      );
+    } finally {
+      await app.close();
+    }
+  }, 30_000);
 });
 
 // ── Block B: live HTTP checks against the deployed alpha (gated) ────────

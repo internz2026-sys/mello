@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Optional } from '@nestjs/common';
 import { Pool } from 'pg';
 
 import type {
@@ -81,7 +81,14 @@ class PgQuarantineStore implements QuarantineStore {
 export class QuarantineService {
   private readonly log = new Logger(QuarantineService.name);
 
-  constructor(private readonly store: QuarantineStore = new PgQuarantineStore()) {}
+  // @Optional(): `QuarantineStore` is a TS interface (no DI token), so
+  // Nest cannot inject it. @Optional() makes Nest pass undefined and the
+  // default PgQuarantineStore() applies — identical to the unit-test
+  // path. No crisis behaviour changes; the dedicated-credential store is
+  // unchanged. (S5/STEP-8 DI plumbing for the pre-existing 4B wiring.)
+  constructor(
+    @Optional() private readonly store: QuarantineStore = new PgQuarantineStore(),
+  ) {}
 
   async quarantineCrisisEntry(
     input: QuarantineInput,

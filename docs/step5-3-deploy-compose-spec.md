@@ -18,6 +18,20 @@ code, classifier, bridge wording, retention, or policy is changed.
 >   `*_DATABASE_URL` are four distinct least-privilege roles on the
 >   external Supabase Postgres. VPS = `api` + `qdrant` only. Isolation is
 >   by role, preserved; S5-1 guard still enforces distinctness at boot.
+>
+> ### LOCAL VARIANT (2026-05-20) — reverses both, for local testing only
+> - No Supabase available → **local `postgres` container**
+>   (`docker-compose.alpha.local.yml`); migrations + a generated
+>   login-user bootstrap run via the postgres init hook. The VPS file
+>   `docker-compose.alpha.yml` is retained unchanged.
+> - Migration roles are **NOLOGIN** privilege sets → three **distinct
+>   login users** each `GRANT`ed one role (inheritance enforces
+>   isolation; S5-1 guard unchanged). Fixed the defective
+>   `alpha.env.example` (was `mello_*_rw` which cannot log in).
+> - Claude auth → **9b**: host `~/.claude/.credentials.json` bind-mounted
+>   READ-ONLY (your existing PC login); no token minted, no API key.
+>   Caveat: RO mount won't refresh an expired OAuth token (fine for a
+>   local session). 9a/Supabase remain the VPS path.
 
 **Checkpoint context:** `e9ff63d`; tsc 0; 9 suites/100 pass/41 gated;
 S5-1 credential guard + S5-2 deploy smoke landed.
