@@ -14,6 +14,10 @@ bottom, then `docs/follow-ups.md`, then `CLAUDE.md`.**
 > `.claude/settings.json`. Local transcripts and project memory live under
 > the project key `c--Users-Admin-Documents-mello`. Git history was rewritten
 > on 2026-05-22 so no commit content references the prior name.
+>
+> **Remote:** `origin` → https://github.com/internz2026-sys/mello (branch
+> `main`). A pre-rewrite recovery point is kept LOCAL-only as the tag
+> `backup-pre-mello-rename` (not pushed).
 
 ---
 
